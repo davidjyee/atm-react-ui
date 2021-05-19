@@ -30,14 +30,14 @@ module.exports = (options) => ({
       },
       {
         //
-        test: /\.css$/,
-        use: ["style-loader", "css-loader"],
+        test: /\.(scss|css)$/,
+        use: ["style-loader", "css-loader", "sass-loader"],
       },
       {
         // Preprocess 3rd party .css files located in node_modules if you have them
-        test: /\.css$/,
+        test: /\.(scss|css)$/,
         include: /node_modules/,
-        use: ["style-loader", "css-loader"],
+        use: ["style-loader", "css-loader", "sass-loader"],
       },
       // Allows for SVG Use
       {
