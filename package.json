@@ -21,7 +21,9 @@
   "scripts": {
     "start": "npm run format && npm run lint && webpack serve --config ./webpack/dev.config.js --color --progress --no-stats-cached-modules",
     "build:dev": "npm run format && npm run lint && webpack --config ./webpack/dev.config.js --color --progress --no-stats-cached-modules",
-    "build:prod": "npm run format && npm run lint && webpack --config ./webpack/prod.config.js --color --analyze --progress --no-stats-orphan-modules",
+    "build:prod--analyze": "npm run format && npm run lint && webpack --config ./webpack/prod.config.js --color --analyze --progress --no-stats-orphan-modules",
+    "build:prod": "npm run format && npm run lint && webpack --config ./webpack/prod.config.js --color --progress --no-stats-orphan-modules",
+    "deploy": "bash ./deploy.sh",
     "format": "prettier --write src/**/*.ts{,x}",
     "lint": "eslint src/**/*.ts{,x}"
   },
