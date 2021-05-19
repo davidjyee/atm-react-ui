@@ -1,10 +1,10 @@
 import store, { ThunkDispatch } from './store';
-import { showAtmUi } from './actions';
+import { showUI } from './actions';
 
 const dispatch: ThunkDispatch = store.dispatch;
 
 window.addEventListener('message', (event) => {
   if (event.data.type === 'atm-visibility') {
-    dispatch(showAtmUi(event.data.visibility));
+    dispatch(showUI(event.data.visibility));
   }
 });
