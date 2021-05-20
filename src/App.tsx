@@ -1,36 +1,37 @@
 import React from 'react';
 import './App.scss';
 
-import { ThunkDispatch, IStoreState } from './store';
-import { useDispatch, useSelector } from 'react-redux';
-import { showUI, deposit } from './actions';
+import Router from './components/Pages';
+import Layout from './components/Layout';
 
-function App() {
-  const dispatch: ThunkDispatch = useDispatch();
-  const show = useSelector((state: IStoreState) => state.messages.show);
+import CssBaseline from '@material-ui/core/CssBaseline';
+import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 
+const theme = createMuiTheme({
+  palette: {
+    type: 'dark',
+    primary: {
+      main: '#6d1aad',
+    },
+    secondary: {
+      main: '#8c47b8',
+    },
+    background: {
+      paper: '#141821',
+      default: 'rgba(0, 0, 0, 0)',
+    },
+  },
+});
+
+export default function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        {show && (
-          <div>
-            <button
-              className="mdc-button mdc-button--raised"
-              onClick={() => dispatch(deposit(50)).then(console.log)}
-            >
-              <span className="mdc-button__label"> Deposit </span>
-            </button>
-            <button
-              className="mdc-button mdc-button--raised"
-              onClick={() => dispatch(showUI(false))}
-            >
-              <span className="mdc-button__label"> Exit </span>
-            </button>
-          </div>
-        )}
-      </header>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <Layout>
+          <Router />
+        </Layout>
+      </ThemeProvider>
     </div>
   );
 }
-
-export default App;
