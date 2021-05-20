@@ -23,12 +23,20 @@ interface LayoutProps {
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
-    'background-color': theme.palette.background.default,
+    backgroundColor: theme.palette.background.default,
     margin: '15%',
     border: `1px solid ${theme.palette.divider}`,
   },
   title: {
     flexGrow: 1,
+  },
+  navigation: {
+    borderRight: `1px solid ${theme.palette.divider}`,
+    margin: theme.spacing(1),
+  },
+  content: {
+    flexGrow: 1,
+    margin: theme.spacing(1),
   },
 }));
 
@@ -52,10 +60,12 @@ export default function Layout(props: LayoutProps) {
             </Toolbar>
           </AppBar>
           <Grid container spacing={1}>
-            <Grid item>
+            <Grid item className={classes.navigation}>
               <Navigation />
             </Grid>
-            <Grid item>{props.children}</Grid>
+            <Grid item className={classes.content}>
+              {props.children}
+            </Grid>
           </Grid>
         </div>
       </Fade>
