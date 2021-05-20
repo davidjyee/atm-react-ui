@@ -1,11 +1,15 @@
 import React from 'react';
-import './App.scss';
 
-import Router from './components/Pages';
+import Pages from './components/Pages';
 import Layout from './components/Layout';
 
-import CssBaseline from '@material-ui/core/CssBaseline';
+import store from './store';
+import { Provider } from 'react-redux';
+
+import { CssBaseline, NoSsr } from '@material-ui/core';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+
+import { HashRouter as Router } from 'react-router-dom';
 
 const theme = createMuiTheme({
   palette: {
@@ -17,8 +21,16 @@ const theme = createMuiTheme({
       main: '#8c47b8',
     },
     background: {
-      paper: '#141821',
-      default: 'rgba(0, 0, 0, 0)',
+      default: '#141821',
+    },
+  },
+});
+
+const cssTheme = createMuiTheme({
+  palette: {
+    type: 'dark',
+    background: {
+      default: 'rgba(0, 0, 0, 1)',
     },
   },
 });
@@ -26,12 +38,20 @@ const theme = createMuiTheme({
 export default function App() {
   return (
     <div className="App">
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <Layout>
-          <Router />
-        </Layout>
-      </ThemeProvider>
+      <Provider store={store}>
+        <NoSsr>
+          <ThemeProvider theme={cssTheme}>
+            <CssBaseline />
+          </ThemeProvider>
+          <ThemeProvider theme={theme}>
+            <Router>
+              <Layout>
+                <Pages />
+              </Layout>
+            </Router>
+          </ThemeProvider>
+        </NoSsr>
+      </Provider>
     </div>
   );
 }

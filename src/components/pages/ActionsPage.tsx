@@ -2,7 +2,7 @@ import React from 'react';
 
 import { ThunkDispatch } from '../../store';
 import { useDispatch } from 'react-redux';
-import { showUI, deposit } from '../../actions';
+import { deposit } from '../../actions';
 
 import Button from '@material-ui/core/Button';
 
@@ -17,9 +17,6 @@ export default function ActionsPage() {
         color="primary"
       >
         Deposit
-      </Button>
-      <Button onClick={() => dispatch(showUI(false))} variant="contained" color="primary">
-        Exit
       </Button>
     </div>
   );
