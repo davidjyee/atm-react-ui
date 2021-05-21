@@ -1,6 +1,7 @@
 import React from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
 import ActionsPage from './ActionsPage';
+import DetailsPage from './DetailsPage';
 
 export default function MainRouter() {
   return (
@@ -8,7 +9,9 @@ export default function MainRouter() {
       <Route path="/actions">
         <ActionsPage />
       </Route>
-      <Route path="/details">Test</Route>
+      <Route path="/details">
+        <DetailsPage />
+      </Route>
       <Route path="/manage">Test</Route>
       <Route path="/transactions">Test</Route>
       <Route path="/">

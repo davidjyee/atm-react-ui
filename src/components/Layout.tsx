@@ -77,9 +77,17 @@ interface LayoutProps {
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
+    display: 'flex',
+    flexDirection: 'column',
     backgroundColor: theme.palette.background.default,
-    margin: '15%',
+    position: 'absolute',
+    top: '15%',
+    left: '15%',
+    right: '15%',
+    bottom: '15%',
     border: `1px solid ${theme.palette.divider}`,
+    overflowX: 'hidden',
+    overflowY: 'hidden',
   },
   title: {
     marginRight: theme.spacing(2),
@@ -87,13 +95,19 @@ const useStyles = makeStyles((theme: Theme) => ({
   accountSelect: {
     flexGrow: 1,
   },
+  grid: {
+    height: '100%',
+    overflowY: 'auto',
+    overflowX: 'hidden',
+    padding: theme.spacing(1),
+    marginBottom: theme.spacing(1),
+  },
   navigation: {
     borderRight: `1px solid ${theme.palette.divider}`,
-    margin: theme.spacing(1),
+    marginRight: theme.spacing(1),
   },
   content: {
     flexGrow: 1,
-    margin: theme.spacing(1),
   },
 }));
 
@@ -124,7 +138,7 @@ export default function Layout(props: LayoutProps) {
               </Button>
             </Toolbar>
           </AppBar>
-          <Grid container spacing={1}>
+          <Grid container spacing={1} className={classes.grid}>
             <Grid item className={classes.navigation}>
               <Navigation />
             </Grid>
