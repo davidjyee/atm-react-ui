@@ -1,6 +1,6 @@
 import { ThunkResult, ThunkDispatch } from '../store';
 import { START_DEPOSIT, FINISH_DEPOSIT, START_WITHDRAW, FINISH_WITHDRAW } from './types';
-import { commitDeposit } from './messageActions';
+import { commitDeposit, commitWithdraw } from './messageActions';
 
 export function deposit(amount: number): ThunkResult<Promise<void>> {
   return async (dispatch: ThunkDispatch): Promise<void> => {
@@ -24,7 +24,7 @@ export function withdraw(amount: number): ThunkResult<Promise<void>> {
       type: START_WITHDRAW,
     });
 
-    const success = await dispatch(commitDeposit(amount));
+    const success = await dispatch(commitWithdraw(amount));
 
     dispatch({
       type: FINISH_WITHDRAW,

@@ -8,10 +8,12 @@ import {
 
 interface messages {
   show: boolean;
+  transactionLock: boolean;
 }
 
 const initialState: messages = {
   show: true,
+  transactionLock: true,
 };
 
 export default function messageReducer(
@@ -26,7 +28,15 @@ export default function messageReducer(
       };
     case START_SHOW_UI:
     case START_TRANSACTION_MESSAGE:
+      return {
+        ...state,
+        transactionLock: true,
+      };
     case FINISH_TRANSACTION_MESSAGE:
+      return {
+        ...state,
+        transactionLock: false,
+      };
     default:
       return state;
   }

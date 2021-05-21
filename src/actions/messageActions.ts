@@ -57,7 +57,7 @@ export function commitDeposit(amount: number): ThunkResult<Promise<boolean>> {
       }),
     });
 
-    const json: any = safeJSONParse(res);
+    const json: any = await safeJSONParse(res);
 
     dispatch({
       type: FINISH_TRANSACTION_MESSAGE,
@@ -84,7 +84,7 @@ export function commitWithdraw(amount: number): ThunkResult<Promise<boolean>> {
       }),
     });
 
-    const json: any = safeJSONParse(res);
+    const json: any = await safeJSONParse(res);
 
     dispatch({
       type: FINISH_TRANSACTION_MESSAGE,

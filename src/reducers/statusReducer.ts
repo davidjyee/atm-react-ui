@@ -1,5 +1,10 @@
 import { AnyAction } from 'redux';
-import { START_DEPOSIT, FINISH_DEPOSIT } from '../actions';
+import {
+  START_DEPOSIT,
+  FINISH_DEPOSIT,
+  START_WITHDRAW,
+  FINISH_WITHDRAW,
+} from '../actions';
 
 interface status {
   name: string;
@@ -26,6 +31,9 @@ function transact(account: status, action: AnyAction): status {
       case FINISH_DEPOSIT:
         newState.cash -= action.amount;
         break;
+      case FINISH_WITHDRAW:
+        newState.cash += action.amount;
+        break;
       default:
         break;
     }
@@ -36,11 +44,13 @@ function transact(account: status, action: AnyAction): status {
 
 export default function statusReducer(state = initialState, action: AnyAction): status {
   switch (action.type) {
+    case START_WITHDRAW:
     case START_DEPOSIT:
       return {
         ...state,
         transactionLock: true,
       };
+    case FINISH_WITHDRAW:
     case FINISH_DEPOSIT:
       return transact(state, action);
     default:
