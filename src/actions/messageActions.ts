@@ -1,5 +1,20 @@
 import { ThunkResult, ThunkDispatch } from '../store';
-import { START_SHOW_UI, FINISH_SHOW_UI, START_DEPOSIT, FINISH_DEPOSIT } from './types';
+import {
+  START_SHOW_UI,
+  FINISH_SHOW_UI,
+  START_TRANSACTION_MESSAGE,
+  FINISH_TRANSACTION_MESSAGE,
+} from './types';
+
+async function safeJSONParse(res: Response) {
+  if (res.ok) {
+    const json: any = await res.json();
+
+    return json;
+  } else {
+    throw new Error('INVALID RESPONSE');
+  }
+}
 
 export function showUI(visibility: boolean): ThunkResult<Promise<void>> {
   return async (dispatch: ThunkDispatch): Promise<void> => {
@@ -25,10 +40,10 @@ export function showUI(visibility: boolean): ThunkResult<Promise<void>> {
   };
 }
 
-export function deposit(amount: number): ThunkResult<Promise<boolean>> {
+export function commitDeposit(amount: number): ThunkResult<Promise<boolean>> {
   return async (dispatch: ThunkDispatch): Promise<boolean> => {
     dispatch({
-      type: START_DEPOSIT,
+      type: START_TRANSACTION_MESSAGE,
     });
 
     //Deposit the amount
@@ -42,11 +57,37 @@ export function deposit(amount: number): ThunkResult<Promise<boolean>> {
       }),
     });
 
-    const json: any = await res.json();
+    const json: any = safeJSONParse(res);
 
     dispatch({
-      type: FINISH_DEPOSIT,
-      amount,
+      type: FINISH_TRANSACTION_MESSAGE,
+    });
+
+    return json.success;
+  };
+}
+
+export function commitWithdraw(amount: number): ThunkResult<Promise<boolean>> {
+  return async (dispatch: ThunkDispatch): Promise<boolean> => {
+    dispatch({
+      type: START_TRANSACTION_MESSAGE,
+    });
+
+    //Deposit the amount
+    const res: Response = await fetch(`https://atm-esx-react-example/withdraw`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: JSON.stringify({
+        amount,
+      }),
+    });
+
+    const json: any = safeJSONParse(res);
+
+    dispatch({
+      type: FINISH_TRANSACTION_MESSAGE,
     });
 
     return json.success;

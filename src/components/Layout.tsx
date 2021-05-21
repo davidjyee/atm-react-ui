@@ -28,17 +28,42 @@ interface SelectAccountProps {
 function SelectAccount(props: SelectAccountProps) {
   return (
     <div className={props.className}>
-      <FormControl variant="standard">
-        <InputLabel id="demo-simple-select-filled-label">Account</InputLabel>
-        <Select
-          labelId="demo-simple-select-filled-label"
-          id="demo-simple-select-filled"
-          value={'Personal'}
-          onChange={() => {}}
-        >
-          <MenuItem value={'Personal'}>Personal</MenuItem>
-        </Select>
-      </FormControl>
+      <Grid container direction="row" spacing={1} alignItems="center">
+        <Grid item>
+          <FormControl variant="standard">
+            <InputLabel id="demo-simple-select-filled-label">Account</InputLabel>
+            <Select
+              labelId="demo-simple-select-filled-label"
+              id="demo-simple-select-filled"
+              value={123456789}
+              onChange={() => {}}
+            >
+              <MenuItem value={123456789}>
+                {'Personal'} - {123456789}
+              </MenuItem>
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item>
+          <Grid container direction="column" spacing={0}>
+            <Grid item>
+              <Typography variant="caption" display="inline">
+                Account Name: {'Personal'}
+              </Typography>
+            </Grid>
+            <Grid item>
+              <Typography variant="caption" display="inline">
+                Account Number: {123456789}
+              </Typography>
+            </Grid>
+            <Grid item>
+              <Typography variant="caption" display="inline">
+                Balance: ${100}
+              </Typography>
+            </Grid>
+          </Grid>
+        </Grid>
+      </Grid>
     </div>
   );
 }

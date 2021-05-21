@@ -2,7 +2,7 @@ import React from 'react';
 
 import { ThunkDispatch } from '../../store';
 import { useDispatch } from 'react-redux';
-import { deposit } from '../../actions';
+import { deposit, withdraw } from '../../actions';
 
 import {
   Grid,
@@ -46,11 +46,7 @@ function ActionDeposit() {
       </Grid>
       <Divider />
       <Grid item>
-        <Button
-          onClick={() => dispatch(deposit(50)).then(console.log)}
-          variant="contained"
-          color="primary"
-        >
+        <Button onClick={() => dispatch(deposit(50))} variant="contained" color="primary">
           Deposit
         </Button>
       </Grid>
@@ -75,7 +71,7 @@ function ActionWithdraw() {
       <Divider />
       <Grid item>
         <Button
-          onClick={() => dispatch(deposit(50)).then(console.log)}
+          onClick={() => dispatch(withdraw(50)).then(console.log)}
           variant="contained"
           color="primary"
         >
