@@ -46,7 +46,11 @@ function ActionDeposit() {
       </Grid>
       <Divider />
       <Grid item>
-        <Button onClick={() => dispatch(deposit(50)).then(console.log)} variant="contained" color="primary">
+        <Button
+          onClick={() => dispatch(deposit(50)).then(console.log)}
+          variant="contained"
+          color="primary"
+        >
           Deposit
         </Button>
       </Grid>
@@ -70,7 +74,11 @@ function ActionWithdraw() {
       </Grid>
       <Divider />
       <Grid item>
-        <Button onClick={() => dispatch(deposit(50)).then(console.log)} variant="contained" color="primary">
+        <Button
+          onClick={() => dispatch(deposit(50)).then(console.log)}
+          variant="contained"
+          color="primary"
+        >
           Withdraw
         </Button>
       </Grid>
@@ -94,7 +102,11 @@ function ActionTransfer() {
       </Grid>
       <Divider />
       <Grid item>
-        <Button onClick={() => dispatch(deposit(50)).then(console.log)} variant="contained" color="primary">
+        <Button
+          onClick={() => dispatch(deposit(50)).then(console.log)}
+          variant="contained"
+          color="primary"
+        >
           Transfer
         </Button>
       </Grid>
@@ -104,13 +116,11 @@ function ActionTransfer() {
 
 export default function ActionsPage() {
   const classes = useStyles();
-  
+
   return (
     <div className={classes.root}>
       <Accordion>
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
-        >
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Typography className={classes.heading}>Deposit</Typography>
         </AccordionSummary>
         <AccordionDetails>
@@ -118,9 +128,7 @@ export default function ActionsPage() {
         </AccordionDetails>
       </Accordion>
       <Accordion>
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
-        >
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Typography className={classes.heading}>Withdraw</Typography>
         </AccordionSummary>
         <AccordionDetails>
@@ -128,9 +136,7 @@ export default function ActionsPage() {
         </AccordionDetails>
       </Accordion>
       <Accordion>
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
-        >
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Typography className={classes.heading}>Wire Transfer</Typography>
         </AccordionSummary>
         <AccordionDetails>

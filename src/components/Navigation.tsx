@@ -19,7 +19,9 @@ export default function Navigation() {
       }}
     >
       <Tab label="Actions" value="/actions" />
-      <Tab label="Accounts" value="/accounts" />
+      <Tab label="Details" value="/details" />
+      <Tab label="Manage" value="/manage" />
+      <Tab label="Transactions" value="/transactions" />
     </Tabs>
   );
 }

@@ -8,7 +8,9 @@ export default function MainRouter() {
       <Route path="/actions">
         <ActionsPage />
       </Route>
-      <Route path="/accounts">Test</Route>
+      <Route path="/details">Test</Route>
+      <Route path="/manage">Test</Route>
+      <Route path="/transactions">Test</Route>
       <Route path="/">
         <Redirect to="/actions" />
       </Route>
