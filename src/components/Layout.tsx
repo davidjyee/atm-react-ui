@@ -27,6 +27,7 @@ interface SelectAccountProps {
 
 function SelectAccount(props: SelectAccountProps) {
   const account = useSelector((state: IStoreState) => state.account);
+  const status = useSelector((state: IStoreState) => state.status);
 
   return (
     <div className={props.className}>
@@ -50,17 +51,17 @@ function SelectAccount(props: SelectAccountProps) {
           <Grid container direction="column" spacing={0}>
             <Grid item>
               <Typography variant="caption" display="inline">
-                Account Name: {account.name}
+                State ID: {status.id}
               </Typography>
             </Grid>
             <Grid item>
               <Typography variant="caption" display="inline">
-                Account Number: {account.number}
+                Name: {status.name}
               </Typography>
             </Grid>
             <Grid item>
               <Typography variant="caption" display="inline">
-                Balance: ${account.balance}
+                Cash: ${status.cash}
               </Typography>
             </Grid>
           </Grid>
