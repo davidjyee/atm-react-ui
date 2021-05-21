@@ -6,6 +6,8 @@ import {
   FINISH_TRANSACTION_MESSAGE,
 } from './types';
 
+const resourceName: string = 'atm-esx-react-example';
+
 async function safeJSONParse(res: Response) {
   if (res.ok) {
     const json: any = await res.json();
@@ -23,7 +25,7 @@ export function showUI(visibility: boolean): ThunkResult<Promise<void>> {
     });
 
     //Set the focus of the application
-    fetch(`https://atm-esx-react-example/focus`, {
+    fetch(`https://${resourceName}/focus`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
@@ -47,7 +49,7 @@ export function commitDeposit(amount: number): ThunkResult<Promise<boolean>> {
     });
 
     //Deposit the amount
-    const res: Response = await fetch(`https://atm-esx-react-example/deposit`, {
+    const res: Response = await fetch(`https://${resourceName}/deposit`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
@@ -74,7 +76,7 @@ export function commitWithdraw(amount: number): ThunkResult<Promise<boolean>> {
     });
 
     //Deposit the amount
-    const res: Response = await fetch(`https://atm-esx-react-example/withdraw`, {
+    const res: Response = await fetch(`https://${resourceName}/withdraw`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',

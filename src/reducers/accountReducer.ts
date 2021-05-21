@@ -29,10 +29,10 @@ function transact(account: account, action: AnyAction): account {
   if (action.success) {
     switch (action.type) {
       case FINISH_DEPOSIT:
-        newState.balance += action.amount;
+        newState.balance += parseInt(action.amount);
         break;
       case FINISH_WITHDRAW:
-        newState.balance -= action.amount;
+        newState.balance -= parseInt(action.amount);
         break;
       default:
         break;

@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { MouseEventHandler, ChangeEventHandler } from 'react';
 
-import { ThunkDispatch } from '../../store';
-import { useDispatch } from 'react-redux';
-import { deposit, withdraw } from '../../actions';
+import { ThunkDispatch, IStoreState } from '../../store';
+import { useDispatch, useSelector } from 'react-redux';
+import { deposit, withdraw, setParameter } from '../../actions';
 
 import {
   Grid,
@@ -14,9 +14,17 @@ import {
   AccordionDetails,
   Divider,
   Typography,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
 } from '@material-ui/core';
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
-import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
+import {
+  ExpandMore as ExpandMoreIcon,
+  AccountBalance as AccountBalanceIcon,
+  AccountBalanceWallet as AccountBalanceWalletIcon,
+} from '@material-ui/icons';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -27,55 +35,59 @@ const useStyles = makeStyles((theme: Theme) =>
       fontSize: theme.typography.pxToRem(15),
       fontWeight: theme.typography.fontWeightRegular,
     },
+    list: {
+      borderLeft: `2px solid ${theme.palette.divider}`,
+    },
   })
 );
 
-function ActionDeposit() {
-  const dispatch: ThunkDispatch = useDispatch();
+interface cashProps {
+  fieldText: string;
+  fieldValue: string;
+  buttonText: string;
 
-  return (
-    <Grid container direction="column" spacing={2}>
-      <Grid item>
-        <TextField
-          label="Amount to Deposit"
-          InputProps={{
-            startAdornment: <InputAdornment position="start">$</InputAdornment>,
-          }}
-          variant="filled"
-        />
-      </Grid>
-      <Divider />
-      <Grid item>
-        <Button onClick={() => dispatch(deposit(50))} variant="contained" color="primary">
-          Deposit
-        </Button>
-      </Grid>
-    </Grid>
-  );
+  onFieldChange: ChangeEventHandler;
+  onButtonClick: MouseEventHandler;
+
+  balance: number;
+  cash: number;
 }
 
-function ActionWithdraw() {
-  const dispatch: ThunkDispatch = useDispatch();
+function ActionCash(props: cashProps) {
+  const classes = useStyles();
 
   return (
     <Grid container direction="column" spacing={2}>
       <Grid item>
+        <List className={classes.list}>
+          <ListItem>
+            <ListItemIcon>
+              <AccountBalanceIcon fontSize="large" />
+            </ListItemIcon>
+            <ListItemText primary="Account Balance" secondary={`$${props.balance}`} />
+          </ListItem>
+          <ListItem>
+            <ListItemIcon>
+              <AccountBalanceWalletIcon fontSize="large" />
+            </ListItemIcon>
+            <ListItemText primary="Cash" secondary={`$${props.cash}`} />
+          </ListItem>
+        </List>
+      </Grid>
+      <Grid item>
         <TextField
-          label="Amount to Withdraw"
+          label={props.fieldText}
           InputProps={{
             startAdornment: <InputAdornment position="start">$</InputAdornment>,
           }}
           variant="filled"
+          onChange={props.onFieldChange}
         />
       </Grid>
       <Divider />
       <Grid item>
-        <Button
-          onClick={() => dispatch(withdraw(50)).then(console.log)}
-          variant="contained"
-          color="primary"
-        >
-          Withdraw
+        <Button onClick={props.onButtonClick} variant="contained" color="primary">
+          {props.buttonText}
         </Button>
       </Grid>
     </Grid>
@@ -111,6 +123,21 @@ function ActionTransfer() {
 }
 
 export default function ActionsPage() {
+  const dispatch: ThunkDispatch = useDispatch();
+
+  const account = useSelector((state: IStoreState) => state.account);
+  const status = useSelector((state: IStoreState) => state.status);
+
+  const depositFieldId = 'deposit-field';
+  const depositFieldValue = useSelector(
+    (state: IStoreState) => state.data[depositFieldId]
+  );
+
+  const withdrawFieldId = 'withdraw-field';
+  const withdrawFieldValue = useSelector(
+    (state: IStoreState) => state.data[withdrawFieldId]
+  );
+
   const classes = useStyles();
 
   return (
@@ -120,7 +147,17 @@ export default function ActionsPage() {
           <Typography className={classes.heading}>Deposit</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <ActionDeposit />
+          <ActionCash
+            fieldText="Amount to Deposit"
+            fieldValue={depositFieldValue}
+            buttonText="Deposit"
+            onButtonClick={() => dispatch(deposit(depositFieldValue))}
+            onFieldChange={(event) =>
+              dispatch(setParameter(depositFieldId, parseInt(event.target.value)))
+            }
+            balance={account.balance}
+            cash={status.cash}
+          />
         </AccordionDetails>
       </Accordion>
       <Accordion>
@@ -128,7 +165,17 @@ export default function ActionsPage() {
           <Typography className={classes.heading}>Withdraw</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <ActionWithdraw />
+          <ActionCash
+            fieldText="Amount to Withdraw"
+            fieldValue={withdrawFieldValue}
+            buttonText="Withdraw"
+            onButtonClick={() => dispatch(withdraw(withdrawFieldValue))}
+            onFieldChange={(event) =>
+              dispatch(setParameter(withdrawFieldId, parseInt(event.target.value)))
+            }
+            balance={account.balance}
+            cash={status.cash}
+          />
         </AccordionDetails>
       </Accordion>
       <Accordion>
