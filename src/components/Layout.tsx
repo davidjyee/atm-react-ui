@@ -26,6 +26,8 @@ interface SelectAccountProps {
 }
 
 function SelectAccount(props: SelectAccountProps) {
+  const account = useSelector((state: IStoreState) => state.account);
+
   return (
     <div className={props.className}>
       <Grid container direction="row" spacing={1} alignItems="center">
@@ -35,11 +37,11 @@ function SelectAccount(props: SelectAccountProps) {
             <Select
               labelId="demo-simple-select-filled-label"
               id="demo-simple-select-filled"
-              value={123456789}
+              value={account.number}
               onChange={() => {}}
             >
-              <MenuItem value={123456789}>
-                {'Personal'} - {123456789}
+              <MenuItem value={account.number}>
+                {account.name} - {account.number}
               </MenuItem>
             </Select>
           </FormControl>
@@ -48,17 +50,17 @@ function SelectAccount(props: SelectAccountProps) {
           <Grid container direction="column" spacing={0}>
             <Grid item>
               <Typography variant="caption" display="inline">
-                Account Name: {'Personal'}
+                Account Name: {account.name}
               </Typography>
             </Grid>
             <Grid item>
               <Typography variant="caption" display="inline">
-                Account Number: {123456789}
+                Account Number: {account.number}
               </Typography>
             </Grid>
             <Grid item>
               <Typography variant="caption" display="inline">
-                Balance: ${100}
+                Balance: ${account.balance}
               </Typography>
             </Grid>
           </Grid>
