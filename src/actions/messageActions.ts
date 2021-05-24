@@ -53,7 +53,7 @@ export function commitTransaction(
     });
 
     //Deposit the amount
-    const res: Response = await fetch(`https://${resourceName}/deposit`, {
+    const res: Response = await fetch(`https://${resourceName}/transaction/commit`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',

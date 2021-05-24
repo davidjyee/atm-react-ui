@@ -116,7 +116,7 @@ function ActionTransfer() {
       <Divider />
       <Grid item>
         <Button
-          onClick={() => dispatch(deposit(50)).then(console.log)}
+          onClick={() => dispatch(deposit(0, 50, 0)).then(console.log)}
           variant="contained"
           color="primary"
         >
