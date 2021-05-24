@@ -115,7 +115,6 @@ export default function Layout(props: LayoutProps): JSX.Element {
   return (
     <ClickAwayListener
       onClickAway={(event: MouseEvent<Document>) => {
-        console.log(event.button);
         if (event.button === 2) {
           dispatch(showUI(false));
         }

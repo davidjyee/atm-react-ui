@@ -40,9 +40,9 @@ function transact(account: AccountState, action: AnyAction): AccountState {
         newState.balance -= transaction.amount;
         break;
       case FINISH_TRANSFER:
-        if (transaction.origin === newState.id) {
+        if (transaction.destination === newState.id) {
           newState.balance += transaction.amount;
-        } else if (transaction.destination === newState.id) {
+        } else if (transaction.origin === newState.id) {
           newState.balance -= transaction.amount;
         }
         break;

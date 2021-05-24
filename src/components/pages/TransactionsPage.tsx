@@ -44,6 +44,9 @@ const useStyles = makeStyles((theme: Theme) =>
     headingWithdraw: {
       color: theme.palette.error.main,
     },
+    headingTransfer: {
+      color: theme.palette.primary.main,
+    },
     secondaryHeading: {
       color: theme.palette.text.secondary,
     },
@@ -73,7 +76,11 @@ function Transaction(props: TransactionProps) {
           <Grid item>
             <Typography
               className={
-                props.amount >= 0 ? classes.headingDeposit : classes.headingWithdraw
+                props.type === 'DEPOSIT'
+                  ? classes.headingDeposit
+                  : props.type === 'WITHDRAWAL'
+                  ? classes.headingWithdraw
+                  : classes.headingTransfer
               }
               variant="h5"
             >
@@ -154,7 +161,13 @@ function Transaction(props: TransactionProps) {
 export default function TransactionsPage(): JSX.Element {
   const classes = useStyles();
 
-  const transactions = useSelector((state: IStoreState) => state.data.transactions);
+  const account = useSelector((state: IStoreState) => state.account);
+  const transactions = useSelector((state: IStoreState) =>
+    state.data.transactions.filter(
+      (transaction) =>
+        transaction.origin === account.id || transaction.destination === account.id
+    )
+  );
 
   return (
     <div className={classes.root}>

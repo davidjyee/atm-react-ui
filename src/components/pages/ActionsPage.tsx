@@ -377,7 +377,7 @@ function ActionTransfer() {
                 parseInt(destinationSelectValue),
                 noteValue
               )
-            ).then(console.log)
+            )
           }
           variant="contained"
           color="primary"

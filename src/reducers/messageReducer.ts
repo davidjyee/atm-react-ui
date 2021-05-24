@@ -78,6 +78,8 @@ function commitTransaction(state: data, transaction: Transaction, success: boole
   if (success) {
     const accountsCopy = [...state.accounts];
 
+    console.log('COMMITTING_TRANSACTION');
+
     // Remove money from origin account if known account
     const originAccount = accountsCopy.find(
       (account: Account) => account.id === transaction.origin
@@ -102,7 +104,7 @@ function commitTransaction(state: data, transaction: Transaction, success: boole
     return {
       ...state,
       accounts: accountsCopy,
-      transaction: transactionsCopy,
+      transactions: transactionsCopy,
     };
   } else {
     return {};
