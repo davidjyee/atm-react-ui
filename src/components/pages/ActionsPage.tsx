@@ -196,6 +196,14 @@ function getBalanceText(balance: number, addition: boolean, amount?: number): st
 export default function ActionsPage() {
   const dispatch: ThunkDispatch = useDispatch();
 
+  const actionExpanded = useSelector(
+    (state: IStoreState) => state.pageData['actionExpanded']
+  );
+  const handleChange =
+    (panel: string) => (event: React.ChangeEvent<{}>, isExpanded: boolean) => {
+      dispatch(setParameter('actionExpanded', isExpanded ? panel : null));
+    };
+
   const account = useSelector((state: IStoreState) => state.account);
   const status = useSelector((state: IStoreState) => state.status);
 
@@ -215,7 +223,10 @@ export default function ActionsPage() {
 
   return (
     <div className={classes.root}>
-      <Accordion>
+      <Accordion
+        expanded={actionExpanded === 'deposit'}
+        onChange={handleChange('deposit')}
+      >
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Typography className={classes.headingDeposit} variant="h4">
             Deposit
@@ -238,7 +249,10 @@ export default function ActionsPage() {
           />
         </AccordionDetails>
       </Accordion>
-      <Accordion>
+      <Accordion
+        expanded={actionExpanded === 'withdraw'}
+        onChange={handleChange('withdraw')}
+      >
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Typography className={classes.headingWithdraw} variant="h4">
             Withdraw
@@ -261,7 +275,10 @@ export default function ActionsPage() {
           />
         </AccordionDetails>
       </Accordion>
-      <Accordion>
+      <Accordion
+        expanded={actionExpanded === 'transfer'}
+        onChange={handleChange('transfer')}
+      >
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Typography className={classes.headingTransfer} variant="h4">
             Transfer

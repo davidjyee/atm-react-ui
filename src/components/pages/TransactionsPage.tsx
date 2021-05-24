@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ChangeEvent } from 'react';
 
 // import { IStoreState } from '../../store';
 // import { useSelector } from 'react-redux';
@@ -10,11 +10,11 @@ import {
   ListItem,
   List,
   Typography,
-  Divider,
   Accordion,
   AccordionSummary,
   AccordionDetails,
   Grid,
+  Divider,
 } from '@material-ui/core';
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
 import {
@@ -54,8 +54,14 @@ function Transaction(props: TransactionProps) {
 
   const classes = useStyles();
 
+  const [expanded, setExpanded] = React.useState<boolean>(false);
+
   return (
-    <Accordion className={classes.root}>
+    <Accordion
+      className={classes.root}
+      expanded={expanded}
+      onChange={(event: ChangeEvent<{}>, isExpanded: boolean) => setExpanded(isExpanded)}
+    >
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <Grid container direction="column">
           <Grid item>
@@ -68,19 +74,23 @@ function Transaction(props: TransactionProps) {
               {props.type.toUpperCase()}
             </Typography>
           </Grid>
-          <Grid item>
-            <Typography className={classes.secondaryHeading} variant="caption">
-              {props.time.toLocaleString(DateTime.DATETIME_SHORT)}
-            </Typography>
-          </Grid>
-          <Grid item>
-            <Typography className={classes.secondaryHeading} variant="caption">
-              {currencyFormatter.format(props.amount)}
-            </Typography>
-          </Grid>
+          {!expanded && (
+            <React.Fragment>
+              <Grid item>
+                <Typography className={classes.secondaryHeading} variant="caption">
+                  {props.time.toLocaleString(DateTime.DATETIME_SHORT)}
+                </Typography>
+              </Grid>
+              <Grid item>
+                <Typography className={classes.secondaryHeading} variant="caption">
+                  {currencyFormatter.format(props.amount)}
+                </Typography>
+              </Grid>
+            </React.Fragment>
+          )}
         </Grid>
       </AccordionSummary>
-      <Divider />
+      {expanded && <Divider />}
       <AccordionDetails>
         <List>
           {props.origin && (
@@ -110,7 +120,7 @@ function Transaction(props: TransactionProps) {
               <ScheduleIcon fontSize="large" />
             </ListItemIcon>
             <ListItemText
-              primary="Time"
+              primary="Timestamp"
               secondary={props.time.toLocaleString(DateTime.DATETIME_SHORT)}
             />
           </ListItem>
