@@ -10,6 +10,7 @@ export type AccessId = number;
 export interface AccessInfo {
   id: AccessId;
   userId: UserId;
+  accountId: AccountId;
   accessLevel: number;
 }
 

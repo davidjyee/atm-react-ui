@@ -34,7 +34,6 @@ import {
   AccountBalance as AccountBalanceIcon,
   AccountBalanceWallet as AccountBalanceWalletIcon,
   GetApp as GetAppIcon,
-  Publish as PublishIcon,
 } from '@material-ui/icons';
 
 interface AmountCheck {
@@ -342,7 +341,7 @@ function ActionTransfer() {
         <List className={classes.list}>
           <ListItem>
             <ListItemIcon>
-              <PublishIcon fontSize="large" />
+              <AccountBalanceIcon fontSize="large" />
             </ListItemIcon>
             <ListItemText primary="Origin Balance" secondary={originText} />
           </ListItem>
@@ -497,11 +496,11 @@ export default function ActionsPage(): JSX.Element {
 
   // Handle accordion expansion so only one action is visible at a time
   const actionExpanded = useSelector(
-    (state: IStoreState) => state.pageData['actionExpanded']
+    (state: IStoreState) => state.pageData['action-expanded']
   );
   const handleChange =
     (panel: string) => (event: React.ChangeEvent<unknown>, isExpanded: boolean) => {
-      dispatch(setParameter('actionExpanded', isExpanded ? panel : null));
+      dispatch(setParameter('action-expanded', isExpanded ? panel : null));
     };
 
   // Retrieve allowed actions

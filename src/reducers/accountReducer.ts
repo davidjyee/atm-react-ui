@@ -7,6 +7,8 @@ import {
   START_TRANSFER,
   FINISH_TRANSFER,
   SWAP_ACCOUNT,
+  START_ADD_ACCESS,
+  FINISH_ADD_ACCESS,
 } from '../actions';
 
 import { Account, Transaction } from '../types';
@@ -63,6 +65,7 @@ export default function accountReducer(
     case START_WITHDRAW:
     case START_DEPOSIT:
     case START_TRANSFER:
+    case START_ADD_ACCESS:
       return {
         ...state,
         transactionLock: true,
@@ -74,6 +77,11 @@ export default function accountReducer(
     case SWAP_ACCOUNT:
       return {
         ...action.to,
+        transactionLock: false,
+      };
+    case FINISH_ADD_ACCESS:
+      return {
+        ...state,
         transactionLock: false,
       };
     default:

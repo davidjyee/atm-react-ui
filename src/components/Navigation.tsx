@@ -22,8 +22,16 @@ export default function Navigation(): JSX.Element {
       }}
     >
       <Tab disabled={!allowedTabs.includes('actions')} label="Actions" value="/actions" />
-      <Tab disabled={!allowedTabs.includes('details')} label="Details" value="/details" />
-      <Tab disabled={!allowedTabs.includes('manage')} label="Manage" value="/manage" />
+      <Tab
+        disabled={!allowedTabs.includes('details')}
+        label="Account Details"
+        value="/details"
+      />
+      <Tab
+        disabled={!allowedTabs.includes('manage')}
+        label="Manage Accounts"
+        value="/manage"
+      />
       <Tab
         disabled={!allowedTabs.includes('transactions')}
         label="Transactions"

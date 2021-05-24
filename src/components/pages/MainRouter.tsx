@@ -2,6 +2,7 @@ import React from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
 import ActionsPage from './ActionsPage';
 import DetailsPage from './DetailsPage';
+import ManagementPage from './ManagementPage';
 import TransactionsPage from './TransactionsPage';
 
 export default function MainRouter(): JSX.Element {
@@ -13,7 +14,9 @@ export default function MainRouter(): JSX.Element {
       <Route path="/details">
         <DetailsPage />
       </Route>
-      <Route path="/manage">Test</Route>
+      <Route path="/manage">
+        <ManagementPage />
+      </Route>
       <Route path="/transactions">
         <TransactionsPage />
       </Route>

@@ -7,9 +7,17 @@ import {
   START_TRANSFER,
   FINISH_TRANSFER,
   SWAP_ACCOUNT,
+  START_ADD_ACCESS,
+  FINISH_ADD_ACCESS,
+  START_REMOVE_ACCESS,
+  FINISH_REMOVE_ACCESS,
 } from './types';
-import { commitTransaction } from './messageActions';
-import { Transaction, UserId, AccountId, RoutingNumber } from '../types';
+import {
+  commitTransaction,
+  addAccessMessage,
+  removeAccessMessage,
+} from './messageActions';
+import { Transaction, UserId, AccountId, RoutingNumber, AccessId } from '../types';
 import { DateTime } from 'luxon';
 
 export function deposit(
@@ -151,6 +159,63 @@ export function swapAccount(to: AccountId): ThunkResult<Promise<void>> {
     dispatch({
       type: SWAP_ACCOUNT,
       to: account,
+    });
+  };
+}
+
+export function addAccess(
+  userId: UserId,
+  accountId: AccountId,
+  accessLevel: number
+): ThunkResult<Promise<void>> {
+  return async (dispatch: ThunkDispatch, getState: () => IStoreState): Promise<void> => {
+    const state = getState();
+
+    // Check for transaction lock first
+    if (state.account.transactionLock) {
+      throw new Error('CANNOT ADD ACCESS: ACCOUNT LOCKED');
+    }
+
+    dispatch({
+      type: START_ADD_ACCESS,
+    });
+
+    const access = {
+      id: Date.now(),
+      userId,
+      accountId,
+      accessLevel,
+    };
+
+    const success = await dispatch(addAccessMessage(access));
+
+    dispatch({
+      type: FINISH_ADD_ACCESS,
+      access,
+      success,
+    });
+  };
+}
+
+export function removeAccess(id: AccessId): ThunkResult<Promise<void>> {
+  return async (dispatch: ThunkDispatch, getState: () => IStoreState): Promise<void> => {
+    const state = getState();
+
+    // Check for transaction lock first
+    if (state.account.transactionLock) {
+      throw new Error('CANNOT ADD ACCESS: ACCOUNT LOCKED');
+    }
+
+    dispatch({
+      type: START_REMOVE_ACCESS,
+    });
+
+    const success = await dispatch(removeAccessMessage(id));
+
+    dispatch({
+      type: FINISH_REMOVE_ACCESS,
+      id,
+      success,
     });
   };
 }

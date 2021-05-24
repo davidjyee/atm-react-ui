@@ -4,9 +4,13 @@ import {
   FINISH_SHOW_UI,
   START_TRANSACTION_MESSAGE,
   FINISH_TRANSACTION_MESSAGE,
+  START_ADD_ACCESS_MESSAGE,
+  FINISH_ADD_ACCESS_MESSAGE,
+  FINISH_REMOVE_ACCESS_MESSAGE,
+  START_REMOVE_ACCESS_MESSAGE,
 } from './types';
 
-import { Transaction } from '../types';
+import { AccessId, AccessInfo, Transaction } from '../types';
 
 const resourceName = 'atm-esx-react-example';
 const fetchHeaders = {
@@ -84,6 +88,76 @@ export function commitTransaction(
     dispatch({
       type: FINISH_TRANSACTION_MESSAGE,
       transaction,
+      success: json.success,
+    });
+
+    return json.success;
+  };
+}
+
+export function addAccessMessage(access: AccessInfo): ThunkResult<Promise<boolean>> {
+  return async (
+    dispatch: ThunkDispatch,
+    getState: () => IStoreState
+  ): Promise<boolean> => {
+    const state = getState();
+
+    // Check for transaction lock first
+    if (state.data.transactionLock) {
+      throw new Error('CANNOT ADD ACCESS: DATA TRANSMISSION ONGOING');
+    }
+
+    dispatch({
+      type: START_ADD_ACCESS_MESSAGE,
+    });
+
+    //commit the addition of the access
+    // const res: Response = await fetch(`https://${resourceName}/access/add`, {
+    //   ...fetchHeaders,
+    //   body: JSON.stringify(access),
+    // });
+
+    // const json = await safeJSONParse(res);
+    const json = { success: true };
+
+    dispatch({
+      type: FINISH_ADD_ACCESS_MESSAGE,
+      access,
+      success: json.success,
+    });
+
+    return json.success;
+  };
+}
+
+export function removeAccessMessage(access: AccessId): ThunkResult<Promise<boolean>> {
+  return async (
+    dispatch: ThunkDispatch,
+    getState: () => IStoreState
+  ): Promise<boolean> => {
+    const state = getState();
+
+    // Check for transaction lock first
+    if (state.data.transactionLock) {
+      throw new Error('CANNOT REMOVE ACCESS: DATA TRANSMISSION ONGOING');
+    }
+
+    dispatch({
+      type: START_REMOVE_ACCESS_MESSAGE,
+    });
+
+    //commit the addition of the access
+    // const res: Response = await fetch(`https://${resourceName}/access/remove`, {
+    //   ...fetchHeaders,
+    //   body: JSON.stringify(access),
+    // });
+
+    // const json = await safeJSONParse(res);
+    const json = { success: true };
+
+    dispatch({
+      type: FINISH_REMOVE_ACCESS_MESSAGE,
+      access,
       success: json.success,
     });
 

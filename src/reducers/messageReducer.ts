@@ -4,8 +4,11 @@ import {
   FINISH_SHOW_UI,
   START_TRANSACTION_MESSAGE,
   FINISH_TRANSACTION_MESSAGE,
+  START_ADD_ACCESS_MESSAGE,
+  FINISH_ADD_ACCESS_MESSAGE,
+  FINISH_REMOVE_ACCESS_MESSAGE,
 } from '../actions';
-import { AccessInfo, Account, Transaction } from '../types';
+import { AccessId, AccessInfo, Account, Transaction } from '../types';
 import { DateTime } from 'luxon';
 
 interface data {
@@ -20,6 +23,7 @@ const initialState: data = {
     {
       id: 0,
       userId: 816,
+      accountId: 1234567890,
       accessLevel: 0,
     },
   ],
@@ -78,8 +82,6 @@ function commitTransaction(state: data, transaction: Transaction, success: boole
   if (success) {
     const accountsCopy = [...state.accounts];
 
-    console.log('COMMITTING_TRANSACTION');
-
     // Remove money from origin account if known account
     const originAccount = accountsCopy.find(
       (account: Account) => account.routing === transaction.origin
@@ -102,9 +104,30 @@ function commitTransaction(state: data, transaction: Transaction, success: boole
     transactionsCopy.push(transaction);
 
     return {
-      ...state,
       accounts: accountsCopy,
       transactions: transactionsCopy,
+    };
+  } else {
+    return {};
+  }
+}
+
+function addAccess(state: data, access: AccessInfo, success: boolean) {
+  if (success) {
+    return {
+      access: [...state.access, access],
+    };
+  } else {
+    return {};
+  }
+}
+
+function removeAccess(state: data, access: AccessId, success: boolean) {
+  if (success) {
+    const accessMap = state.access.filter((info) => info.id !== access);
+
+    return {
+      access: accessMap,
     };
   } else {
     return {};
@@ -115,6 +138,7 @@ export default function messageReducer(state = initialState, action: AnyAction):
   switch (action.type) {
     case START_SHOW_UI:
     case START_TRANSACTION_MESSAGE:
+    case START_ADD_ACCESS_MESSAGE:
       return {
         ...state,
         transactionLock: true,
@@ -124,6 +148,18 @@ export default function messageReducer(state = initialState, action: AnyAction):
       return {
         ...state,
         ...commitTransaction(state, action.transaction, action.success),
+        transactionLock: false,
+      };
+    case FINISH_ADD_ACCESS_MESSAGE:
+      return {
+        ...state,
+        ...addAccess(state, action.access, action.success),
+        transactionLock: false,
+      };
+    case FINISH_REMOVE_ACCESS_MESSAGE:
+      return {
+        ...state,
+        ...removeAccess(state, action.access, action.success),
         transactionLock: false,
       };
     default:
