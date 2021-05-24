@@ -28,7 +28,7 @@ interface SelectAccountProps {
 
 function SelectAccount(props: SelectAccountProps) {
   const dispatch = useDispatch();
-  
+
   const account = useSelector((state: IStoreState) => state.account);
   const accounts = useSelector((state: IStoreState) => state.data.accounts);
   const status = useSelector((state: IStoreState) => state.status);
@@ -39,9 +39,14 @@ function SelectAccount(props: SelectAccountProps) {
         <Grid item>
           <FormControl variant="standard">
             <InputLabel id="account-select-label">Account</InputLabel>
-            <Select labelId="account-select-label" id="account-select" value={account.id} onChange={(event: ChangeEvent<SelectProps>) =>
-              dispatch(swapAccount(event.target.value as number))
-            }>
+            <Select
+              labelId="account-select-label"
+              id="account-select"
+              value={account.id}
+              onChange={(event: ChangeEvent<SelectProps>) =>
+                dispatch(swapAccount(event.target.value as number))
+              }
+            >
               {accounts.map((account) => {
                 return (
                   <MenuItem key={account.id} value={account.id}>

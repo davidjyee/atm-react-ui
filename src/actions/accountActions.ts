@@ -132,9 +132,7 @@ export function transfer(
   };
 }
 
-export function swapAccount(
-  to: AccountId
-): ThunkResult<Promise<void>> {
+export function swapAccount(to: AccountId): ThunkResult<Promise<void>> {
   return async (dispatch: ThunkDispatch, getState: () => IStoreState): Promise<void> => {
     const state = getState();
 

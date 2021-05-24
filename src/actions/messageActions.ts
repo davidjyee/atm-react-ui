@@ -1,4 +1,4 @@
-import { ThunkResult, ThunkDispatch } from '../store';
+import { ThunkResult, ThunkDispatch, IStoreState } from '../store';
 import {
   START_SHOW_UI,
   FINISH_SHOW_UI,
@@ -27,7 +27,14 @@ async function safeJSONParse(res: Response) {
 }
 
 export function showUI(visibility: boolean): ThunkResult<Promise<void>> {
-  return async (dispatch: ThunkDispatch): Promise<void> => {
+  return async (dispatch: ThunkDispatch, getState: () => IStoreState): Promise<void> => {
+    const state = getState();
+
+    // Check for transaction lock first
+    if (!visibility && state.data.transactionLock) {
+      throw new Error('CANNOT EXIT ATM: DATA TRANSMISSION ONGOING');
+    }
+
     dispatch({
       type: START_SHOW_UI,
     });
@@ -51,7 +58,17 @@ export function showUI(visibility: boolean): ThunkResult<Promise<void>> {
 export function commitTransaction(
   transaction: Transaction
 ): ThunkResult<Promise<boolean>> {
-  return async (dispatch: ThunkDispatch): Promise<boolean> => {
+  return async (
+    dispatch: ThunkDispatch,
+    getState: () => IStoreState
+  ): Promise<boolean> => {
+    const state = getState();
+
+    // Check for transaction lock first
+    if (state.data.transactionLock) {
+      throw new Error('CANNOT COMMIT TRANSACTION: DATA TRANSMISSION ONGOING');
+    }
+
     dispatch({
       type: START_TRANSACTION_MESSAGE,
     });
