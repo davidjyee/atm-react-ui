@@ -26,7 +26,7 @@ async function safeJSONParse(res: Response) {
   }
 }
 
-export function showUI(visibility: boolean): ThunkResult<Promise<void>> {
+export function showUI(visibility: boolean, type?: string): ThunkResult<Promise<void>> {
   return async (dispatch: ThunkDispatch, getState: () => IStoreState): Promise<void> => {
     const state = getState();
 
@@ -50,7 +50,7 @@ export function showUI(visibility: boolean): ThunkResult<Promise<void>> {
     dispatch({
       type: FINISH_SHOW_UI,
       show: visibility,
-      interfaceType: 'fleeca-teller',
+      interfaceType: type,
     });
   };
 }

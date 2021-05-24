@@ -44,9 +44,9 @@ export default function interfaceReducer(
     case FINISH_SHOW_UI:
       return {
         ...state,
-        ...getRestrictions(action.interfaceType),
+        ...getRestrictions(action.interfaceType ? action.interfaceType : state.type),
         show: action.show,
-        type: action.interfaceType,
+        type: action.interfaceType ? action.interfaceType : state.type,
       };
     default:
       return state;
