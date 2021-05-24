@@ -15,7 +15,6 @@ export interface Account {
   name: string;
   owner: UserId;
   accessors: Array<UserId>;
-  transactions: Array<TransactionId>;
   balance: number;
 }
 

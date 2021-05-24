@@ -113,7 +113,8 @@ const useStyles = makeStyles((theme: Theme) => ({
 export default function Layout(props: LayoutProps): JSX.Element {
   const classes = useStyles();
   const dispatch: ThunkDispatch = useDispatch();
-  const show = useSelector((state: IStoreState) => state.messages.show);
+  const show = useSelector((state: IStoreState) => state.interface.show);
+  const type = useSelector((state: IStoreState) => state.interface.type);
 
   return (
     <ClickAwayListener
@@ -128,9 +129,21 @@ export default function Layout(props: LayoutProps): JSX.Element {
         <div className={classes.root}>
           <AppBar position="relative">
             <Toolbar variant="dense">
-              <Typography variant="h6" className={classes.title} noWrap>
-                Automated Telling Machine
-              </Typography>
+              {type === 'fleeca-teller' && (
+                <Typography variant="h5" className={classes.title} noWrap>
+                  Fleeca Teller
+                </Typography>
+              )}
+              {type === 'fleeca-atm' && (
+                <Typography variant="h5" className={classes.title} noWrap>
+                  Fleeca ATM
+                </Typography>
+              )}
+              {type === 'atm' && (
+                <Typography variant="h5" className={classes.title} noWrap>
+                  Third-party ATM
+                </Typography>
+              )}
               <SelectAccount className={classes.accountSelect} />
               <Button onClick={() => dispatch(showUI(false))} color="inherit">
                 Exit

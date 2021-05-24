@@ -28,6 +28,64 @@ import {
   AccountBalanceWallet as AccountBalanceWalletIcon,
 } from '@material-ui/icons';
 
+interface AmountCheck {
+  error: boolean;
+  amount?: number;
+  message?: string;
+}
+
+function validAmount(amount: string, limit?: number): AmountCheck {
+  const numberRegex = /^\d+\.?\d*$/;
+  const twoDecRegex = /^\d+\.(?!\d{3,})|^\d+$/;
+
+  const isNumber: boolean = Boolean(amount) && numberRegex.test(amount);
+
+  if (!isNumber) {
+    return {
+      error: true,
+      message: 'Must be a positive number',
+    };
+  }
+
+  const parsedNumber: number = parseFloat(amount);
+
+  const isPositive: boolean = parsedNumber > 0;
+  const isBigEnough: boolean = twoDecRegex.test(amount);
+  const isSmallerThanLimit: boolean = !limit || parsedNumber <= limit;
+
+  if (!isPositive) {
+    return {
+      error: true,
+      message: 'Must be a postive number',
+    };
+  } else if (!isBigEnough) {
+    return {
+      error: true,
+      message: 'Must be larger than one cent',
+    };
+  } else if (!isSmallerThanLimit) {
+    return {
+      error: true,
+      message: 'Must have the requested amount',
+    };
+  } else {
+    return {
+      error: false,
+      amount: parsedNumber,
+    };
+  }
+}
+
+function getBalanceText(balance: number, addition: boolean, amount?: number): string {
+  if (!amount) {
+    return `$${balance}`;
+  } else if (addition) {
+    return `$${balance} + $${amount} = $${balance + amount}`;
+  } else {
+    return `$${balance} - $${amount} = $${balance - amount}`;
+  }
+}
+
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
@@ -166,64 +224,6 @@ function ActionTransfer() {
   );
 }
 
-interface AmountCheck {
-  error: boolean;
-  amount?: number;
-  message?: string;
-}
-
-function validAmount(amount: string, limit?: number): AmountCheck {
-  const numberRegex = /^\d+\.?\d*$/;
-  const twoDecRegex = /^\d+\.(?!\d{3,})|^\d+$/;
-
-  const isNumber: boolean = Boolean(amount) && numberRegex.test(amount);
-
-  if (!isNumber) {
-    return {
-      error: true,
-      message: 'Must be a positive number',
-    };
-  }
-
-  const parsedNumber: number = parseFloat(amount);
-
-  const isPositive: boolean = parsedNumber > 0;
-  const isBigEnough: boolean = twoDecRegex.test(amount);
-  const isSmallerThanLimit: boolean = !limit || parsedNumber <= limit;
-
-  if (!isPositive) {
-    return {
-      error: true,
-      message: 'Must be a postive number',
-    };
-  } else if (!isBigEnough) {
-    return {
-      error: true,
-      message: 'Must be larger than one cent',
-    };
-  } else if (!isSmallerThanLimit) {
-    return {
-      error: true,
-      message: 'Must have the requested amount',
-    };
-  } else {
-    return {
-      error: false,
-      amount: parsedNumber,
-    };
-  }
-}
-
-function getBalanceText(balance: number, addition: boolean, amount?: number): string {
-  if (!amount) {
-    return `$${balance}`;
-  } else if (addition) {
-    return `$${balance} + $${amount} = $${balance + amount}`;
-  } else {
-    return `$${balance} - $${amount} = $${balance - amount}`;
-  }
-}
-
 export default function ActionsPage(): JSX.Element {
   const dispatch: ThunkDispatch = useDispatch();
 
@@ -236,6 +236,11 @@ export default function ActionsPage(): JSX.Element {
       dispatch(setParameter('actionExpanded', isExpanded ? panel : null));
     };
 
+  // Retrieve allowed actions
+  const allowedActions = useSelector(
+    (state: IStoreState) => state.interface.allowedActions
+  );
+
   const classes = useStyles();
 
   return (
@@ -243,6 +248,7 @@ export default function ActionsPage(): JSX.Element {
       <Accordion
         expanded={actionExpanded === 'deposit'}
         onChange={handleChange('deposit')}
+        disabled={!allowedActions.includes('deposit')}
       >
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Typography className={classes.headingDeposit} variant="h4">
@@ -262,6 +268,7 @@ export default function ActionsPage(): JSX.Element {
       <Accordion
         expanded={actionExpanded === 'withdraw'}
         onChange={handleChange('withdraw')}
+        disabled={!allowedActions.includes('withdraw')}
       >
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Typography className={classes.headingWithdraw} variant="h4">
@@ -281,6 +288,7 @@ export default function ActionsPage(): JSX.Element {
       <Accordion
         expanded={actionExpanded === 'transfer'}
         onChange={handleChange('transfer')}
+        disabled={!allowedActions.includes('transfer')}
       >
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Typography className={classes.headingTransfer} variant="h4">

@@ -1,7 +1,7 @@
 import React, { ChangeEvent } from 'react';
 
-// import { IStoreState } from '../../store';
-// import { useSelector } from 'react-redux';
+import { IStoreState } from '../../store';
+import { useSelector } from 'react-redux';
 import { DateTime } from 'luxon';
 
 import {
@@ -33,6 +33,10 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       width: '100%',
+    },
+    headingNone: {
+      display: 'flex',
+      justifyContent: 'center',
     },
     headingDeposit: {
       color: theme.palette.success.main,
@@ -150,41 +154,15 @@ function Transaction(props: TransactionProps) {
 export default function TransactionsPage(): JSX.Element {
   const classes = useStyles();
 
-  const transactions: Array<TransactionProps> = [
-    {
-      id: 0,
-      type: 'DEPOSIT',
-      origin: null,
-      destination: 1234567890,
-      initiator: 816,
-      time: DateTime.now(),
-      amount: 100,
-      note: 'Cash Deposit',
-    },
-    {
-      id: 1,
-      type: 'WITHDRAWAL',
-      origin: 1234567890,
-      destination: null,
-      initiator: 816,
-      time: DateTime.now(),
-      amount: -100,
-      note: 'Cash Withdrawal',
-    },
-    {
-      id: 1,
-      type: 'TRANSFER',
-      origin: 1234567890,
-      destination: 9876543210,
-      initiator: 816,
-      time: DateTime.now(),
-      amount: 100,
-      note: 'Test transfer',
-    },
-  ];
+  const transactions = useSelector((state: IStoreState) => state.messages.transactions);
 
   return (
     <div className={classes.root}>
+      {transactions.length <= 0 && (
+        <Typography color="secondary" variant="h4" className={classes.headingNone}>
+          No transaction history available
+        </Typography>
+      )}
       {transactions.map((transaction) => {
         return <Transaction key={transaction.id} {...transaction} />;
       })}

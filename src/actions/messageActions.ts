@@ -9,6 +9,12 @@ import {
 import { Transaction } from '../types';
 
 const resourceName = 'atm-esx-react-example';
+const fetchHeaders = {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json; charset=UTF-8',
+  },
+};
 
 async function safeJSONParse(res: Response) {
   if (res.ok) {
@@ -28,10 +34,7 @@ export function showUI(visibility: boolean): ThunkResult<Promise<void>> {
 
     //Set the focus of the application
     fetch(`https://${resourceName}/focus`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
+      ...fetchHeaders,
       body: JSON.stringify({
         focus: visibility,
       }),
@@ -40,6 +43,7 @@ export function showUI(visibility: boolean): ThunkResult<Promise<void>> {
     dispatch({
       type: FINISH_SHOW_UI,
       show: visibility,
+      interfaceType: 'fleeca-teller',
     });
   };
 }
@@ -52,12 +56,9 @@ export function commitTransaction(
       type: START_TRANSACTION_MESSAGE,
     });
 
-    //Deposit the amount
+    //commit the transaction
     const res: Response = await fetch(`https://${resourceName}/transaction/commit`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
+      ...fetchHeaders,
       body: JSON.stringify(transaction),
     });
 
@@ -65,6 +66,8 @@ export function commitTransaction(
 
     dispatch({
       type: FINISH_TRANSACTION_MESSAGE,
+      transaction,
+      success: json.success,
     });
 
     return json.success;

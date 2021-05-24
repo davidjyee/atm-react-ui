@@ -3,10 +3,14 @@ import React from 'react';
 import { Tabs, Tab } from '@material-ui/core';
 
 import { useLocation, useHistory } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { IStoreState } from '../store';
 
 export default function Navigation(): JSX.Element {
   const location = useLocation();
   const history = useHistory();
+
+  const allowedTabs = useSelector((state: IStoreState) => state.interface.allowedTabs);
 
   return (
     <Tabs
@@ -17,10 +21,14 @@ export default function Navigation(): JSX.Element {
         history.push(newValue);
       }}
     >
-      <Tab label="Actions" value="/actions" />
-      <Tab label="Details" value="/details" />
-      <Tab label="Manage" value="/manage" />
-      <Tab label="Transactions" value="/transactions" />
+      <Tab disabled={!allowedTabs.includes('actions')} label="Actions" value="/actions" />
+      <Tab disabled={!allowedTabs.includes('details')} label="Details" value="/details" />
+      <Tab disabled={!allowedTabs.includes('manage')} label="Manage" value="/manage" />
+      <Tab
+        disabled={!allowedTabs.includes('transactions')}
+        label="Transactions"
+        value="/transactions"
+      />
     </Tabs>
   );
 }
