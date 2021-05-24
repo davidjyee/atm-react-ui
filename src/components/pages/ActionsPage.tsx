@@ -54,8 +54,10 @@ interface cashProps {
   onFieldChange: ChangeEventHandler;
   onButtonClick: MouseEventHandler;
 
-  balance: number;
-  cash: number;
+  balanceText: string;
+  cashText: string;
+
+  error: boolean;
 }
 
 function ActionCash(props: cashProps) {
@@ -69,13 +71,13 @@ function ActionCash(props: cashProps) {
             <ListItemIcon>
               <AccountBalanceIcon fontSize="large" />
             </ListItemIcon>
-            <ListItemText primary="Account Balance" secondary={`$${props.balance}`} />
+            <ListItemText primary="Account Balance" secondary={props.balanceText} />
           </ListItem>
           <ListItem>
             <ListItemIcon>
               <AccountBalanceWalletIcon fontSize="large" />
             </ListItemIcon>
-            <ListItemText primary="Cash" secondary={`$${props.cash}`} />
+            <ListItemText primary="Cash" secondary={props.cashText} />
           </ListItem>
         </List>
       </Grid>
@@ -87,11 +89,18 @@ function ActionCash(props: cashProps) {
           }}
           variant="filled"
           onChange={props.onFieldChange}
+          error={props.error}
+          helperText={props.error ? 'Must be a positive number' : ''}
         />
       </Grid>
       <Divider />
       <Grid item>
-        <Button onClick={props.onButtonClick} variant="contained" color="primary">
+        <Button
+          onClick={props.onButtonClick}
+          variant="contained"
+          color="primary"
+          disabled={props.error || !props.fieldValue}
+        >
           {props.buttonText}
         </Button>
       </Grid>
@@ -133,15 +142,29 @@ export default function ActionsPage() {
   const account = useSelector((state: IStoreState) => state.account);
   const status = useSelector((state: IStoreState) => state.status);
 
+  const numberRegex: RegExp = /^\d+(\.\d+)?$/;
+
   const depositFieldId = 'deposit-field';
   const depositFieldValue = useSelector(
     (state: IStoreState) => state.pageData[depositFieldId]
   );
+  const depositValid: boolean =
+    depositFieldValue &&
+    numberRegex.test(depositFieldValue) &&
+    parseFloat(depositFieldValue) >= 0.01 &&
+    parseFloat(depositFieldValue) <= status.cash;
+  const depositValue: number = depositValid ? parseFloat(depositFieldValue) : 0;
 
   const withdrawFieldId = 'withdraw-field';
   const withdrawFieldValue = useSelector(
     (state: IStoreState) => state.pageData[withdrawFieldId]
   );
+  const withdrawValid: boolean =
+    withdrawFieldValue &&
+    numberRegex.test(withdrawFieldValue) &&
+    parseFloat(withdrawFieldValue) >= 0.01 &&
+    parseFloat(withdrawFieldValue) <= account.balance;
+  const withdrawValue: number = withdrawValid ? parseFloat(withdrawFieldValue) : 0;
 
   const classes = useStyles();
 
@@ -162,10 +185,15 @@ export default function ActionsPage() {
               dispatch(deposit(status.id, depositFieldValue, account.id))
             }
             onFieldChange={(event: ChangeEvent<HTMLInputElement>) =>
-              dispatch(setParameter(depositFieldId, parseInt(event.target.value)))
+              dispatch(setParameter(depositFieldId, event.target.value))
             }
-            balance={account.balance}
-            cash={status.cash}
+            balanceText={`$${account.balance} + $${depositValue} = $${
+              account.balance + depositValue
+            }`}
+            cashText={`$${status.cash} - $${depositValue} = $${
+              status.cash - depositValue
+            }`}
+            error={Boolean(depositFieldValue) && !depositValid}
           />
         </AccordionDetails>
       </Accordion>
@@ -184,10 +212,15 @@ export default function ActionsPage() {
               dispatch(withdraw(status.id, withdrawFieldValue, account.id))
             }
             onFieldChange={(event: ChangeEvent<HTMLInputElement>) =>
-              dispatch(setParameter(withdrawFieldId, parseInt(event.target.value)))
+              dispatch(setParameter(withdrawFieldId, event.target.value))
             }
-            balance={account.balance}
-            cash={status.cash}
+            balanceText={`$${account.balance} - $${withdrawValue} = $${
+              account.balance - withdrawValue
+            }`}
+            cashText={`$${status.cash} + $${withdrawValue} = $${
+              status.cash + withdrawValue
+            }`}
+            error={Boolean(withdrawFieldValue) && !withdrawValid}
           />
         </AccordionDetails>
       </Accordion>
