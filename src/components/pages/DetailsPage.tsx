@@ -17,7 +17,7 @@ import { makeStyles, createStyles } from '@material-ui/core/styles';
 import {
   AccountBalance as AccountBalanceIcon,
   Assignment as AssignmentIcon,
-  SupervisorAccount as SupervisorAccountIcon,
+  CallMerge as CallMergeIcon,
   Class as ClassIcon,
 } from '@material-ui/icons';
 
@@ -57,9 +57,9 @@ export default function DetailsPage(): JSX.Element {
             </ListItem>
             <ListItem>
               <ListItemIcon>
-                <SupervisorAccountIcon fontSize="large" />
+                <CallMergeIcon fontSize="large" />
               </ListItemIcon>
-              <ListItemText primary="Owner State ID" secondary={account.owner} />
+              <ListItemText primary="Routing Number" secondary={account.routing} />
             </ListItem>
             <ListItem>
               <ListItemIcon>

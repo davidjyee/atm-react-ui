@@ -5,30 +5,36 @@ import {
   START_TRANSACTION_MESSAGE,
   FINISH_TRANSACTION_MESSAGE,
 } from '../actions';
-import { Account, Transaction } from '../types';
+import { AccessInfo, Account, Transaction } from '../types';
 import { DateTime } from 'luxon';
 
 interface data {
+  access: Array<AccessInfo>;
   accounts: Array<Account>;
   transactions: Array<Transaction>;
   transactionLock: boolean;
 }
 
 const initialState: data = {
+  access: [
+    {
+      id: 0,
+      userId: 816,
+      accessLevel: 0,
+    },
+  ],
   accounts: [
     {
       name: 'Personal',
       type: 'Personal',
-      owner: 816,
-      accessors: [],
+      routing: 100,
       id: 1234567890,
       balance: 100,
     },
     {
       name: 'Pillbox',
       type: 'Business',
-      owner: 816,
-      accessors: [],
+      routing: 200,
       id: 9876543210,
       balance: 1000,
     },
