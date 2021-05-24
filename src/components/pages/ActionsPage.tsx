@@ -183,7 +183,7 @@ function ActionCash(props: cashProps) {
             startAdornment: <InputAdornment position="start">$</InputAdornment>,
           }}
           variant="filled"
-          value={fieldValue}
+          value={fieldValue ? fieldValue : ''}
           onChange={(event: ChangeEvent<HTMLInputElement>) =>
             dispatch(setParameter(props.fieldId, event.target.value))
           }
@@ -412,7 +412,7 @@ function ActionTransfer() {
               <TextField
                 label="Destination Account Number"
                 variant="filled"
-                value={destinationAccountFieldValue}
+                value={destinationAccountFieldValue ? destinationAccountFieldValue : ''}
                 fullWidth
                 onChange={(event: ChangeEvent<HTMLInputElement>) =>
                   dispatch(setParameter(destinationAccountFieldId, event.target.value))
@@ -423,7 +423,7 @@ function ActionTransfer() {
               <TextField
                 label="Destination Routing Number"
                 variant="filled"
-                value={destinationRoutingFieldValue}
+                value={destinationRoutingFieldValue ? destinationRoutingFieldValue : ''}
                 fullWidth
                 onChange={(event: ChangeEvent<HTMLInputElement>) =>
                   dispatch(setParameter(destinationRoutingFieldId, event.target.value))
@@ -440,7 +440,7 @@ function ActionTransfer() {
             startAdornment: <InputAdornment position="start">$</InputAdornment>,
           }}
           variant="filled"
-          value={fieldValue}
+          value={fieldValue ? fieldValue : ''}
           onChange={(event: ChangeEvent<HTMLInputElement>) =>
             dispatch(setParameter(fieldId, event.target.value))
           }
@@ -453,7 +453,7 @@ function ActionTransfer() {
         <TextField
           label="Note..."
           variant="filled"
-          value={noteValue}
+          value={noteValue ? noteValue : ''}
           multiline
           fullWidth
           onChange={(event: ChangeEvent<HTMLInputElement>) =>

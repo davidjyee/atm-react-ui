@@ -26,6 +26,12 @@ const initialState: data = {
       accountId: 1234567890,
       accessLevel: 0,
     },
+    {
+      id: 1,
+      userId: 816,
+      accountId: 9876543210,
+      accessLevel: 0,
+    },
   ],
   accounts: [
     {
@@ -48,7 +54,7 @@ const initialState: data = {
       id: 0,
       type: 'DEPOSIT',
       origin: null,
-      destination: 1234567890,
+      destination: 100,
       initiator: 816,
       time: DateTime.now(),
       amount: 100,
@@ -57,7 +63,7 @@ const initialState: data = {
     {
       id: 1,
       type: 'WITHDRAWAL',
-      origin: 1234567890,
+      origin: 100,
       destination: null,
       initiator: 816,
       time: DateTime.now(),
@@ -67,8 +73,8 @@ const initialState: data = {
     {
       id: 2,
       type: 'TRANSFER',
-      origin: 1234567890,
-      destination: 9876543210,
+      origin: 100,
+      destination: 200,
       initiator: 816,
       time: DateTime.now(),
       amount: 100,

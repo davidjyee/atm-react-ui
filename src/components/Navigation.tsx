@@ -29,7 +29,7 @@ export default function Navigation(): JSX.Element {
       />
       <Tab
         disabled={!allowedTabs.includes('manage')}
-        label="Manage Accounts"
+        label="Manage Access"
         value="/manage"
       />
       <Tab

@@ -168,7 +168,8 @@ export default function TransactionsPage(): JSX.Element {
   const transactions = useSelector((state: IStoreState) =>
     state.data.transactions.filter(
       (transaction) =>
-        transaction.origin === account.id || transaction.destination === account.id
+        transaction.origin === account.routing ||
+        transaction.destination === account.routing
     )
   );
 

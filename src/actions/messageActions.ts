@@ -78,12 +78,13 @@ export function commitTransaction(
     });
 
     //commit the transaction
-    const res: Response = await fetch(`https://${resourceName}/transaction/commit`, {
-      ...fetchHeaders,
-      body: JSON.stringify(transaction),
-    });
+    // const res: Response = await fetch(`https://${resourceName}/transaction/commit`, {
+    //   ...fetchHeaders,
+    //   body: JSON.stringify(transaction),
+    // });
 
-    const json = await safeJSONParse(res);
+    // const json = await safeJSONParse(res);
+    const json = { success: true };
 
     dispatch({
       type: FINISH_TRANSACTION_MESSAGE,
