@@ -1,4 +1,4 @@
-import { ThunkResult, ThunkDispatch } from '../store';
+import { ThunkResult, ThunkDispatch, IStoreState } from '../store';
 import {
   START_DEPOSIT,
   FINISH_DEPOSIT,
@@ -6,6 +6,7 @@ import {
   FINISH_WITHDRAW,
   START_TRANSFER,
   FINISH_TRANSFER,
+  SWAP_ACCOUNT,
 } from './types';
 import { commitTransaction } from './messageActions';
 import { Transaction, UserId, AccountId } from '../types';
@@ -16,7 +17,16 @@ export function deposit(
   amount: number,
   into: AccountId
 ): ThunkResult<Promise<void>> {
-  return async (dispatch: ThunkDispatch): Promise<void> => {
+  return async (dispatch: ThunkDispatch, getState: () => IStoreState): Promise<void> => {
+    const state = getState();
+
+    // Check for transaction lock first
+    if (state.account.transactionLock) {
+      throw new Error('CANNOT DEPOSIT: BANK ACCOUNT LOCKED');
+    } else if (state.status.transactionLock) {
+      throw new Error('CANNOT DEPOSIT: CASH ACCOUNT LOCKED');
+    }
+
     dispatch({
       type: START_DEPOSIT,
     });
@@ -47,7 +57,16 @@ export function withdraw(
   amount: number,
   from: AccountId
 ): ThunkResult<Promise<void>> {
-  return async (dispatch: ThunkDispatch): Promise<void> => {
+  return async (dispatch: ThunkDispatch, getState: () => IStoreState): Promise<void> => {
+    const state = getState();
+
+    // Check for transaction lock first
+    if (state.account.transactionLock) {
+      throw new Error('CANNOT WITHDRAW: BANK ACCOUNT LOCKED');
+    } else if (state.status.transactionLock) {
+      throw new Error('CANNOT WITHDRAW: CASH ACCOUNT LOCKED');
+    }
+
     dispatch({
       type: START_WITHDRAW,
     });
@@ -80,7 +99,14 @@ export function transfer(
   destination: AccountId,
   note: string
 ): ThunkResult<Promise<void>> {
-  return async (dispatch: ThunkDispatch): Promise<void> => {
+  return async (dispatch: ThunkDispatch, getState: () => IStoreState): Promise<void> => {
+    const state = getState();
+
+    // Check for transaction lock first
+    if (state.account.transactionLock) {
+      throw new Error('CANNOT TRANSFER: ACCOUNT LOCKED');
+    }
+
     dispatch({
       type: START_TRANSFER,
     });
@@ -102,6 +128,31 @@ export function transfer(
       type: FINISH_TRANSFER,
       success,
       transaction,
+    });
+  };
+}
+
+export function swapAccount(
+  to: AccountId
+): ThunkResult<Promise<void>> {
+  return async (dispatch: ThunkDispatch, getState: () => IStoreState): Promise<void> => {
+    const state = getState();
+
+    // Check for transaction lock first
+    if (state.account.transactionLock) {
+      throw new Error('CANNOT SWAP: ACCOUNT LOCKED');
+    }
+
+    // Find the account to swap to
+    const account = state.data.accounts.find((account) => account.id === to);
+
+    if (!account) {
+      throw new Error('INVALID ACCOUNT');
+    }
+
+    dispatch({
+      type: SWAP_ACCOUNT,
+      to: account,
     });
   };
 }

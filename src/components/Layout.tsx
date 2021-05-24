@@ -1,4 +1,4 @@
-import React, { MouseEvent } from 'react';
+import React, { MouseEvent, ChangeEvent } from 'react';
 
 import { IStoreState, ThunkDispatch } from '../store';
 import { useSelector, useDispatch } from 'react-redux';
@@ -15,18 +15,22 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  SelectProps,
 } from '@material-ui/core';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import Navigation from './Navigation';
 
-import { showUI } from '../actions';
+import { showUI, swapAccount } from '../actions';
 
 interface SelectAccountProps {
   className: string;
 }
 
 function SelectAccount(props: SelectAccountProps) {
+  const dispatch = useDispatch();
+  
   const account = useSelector((state: IStoreState) => state.account);
+  const accounts = useSelector((state: IStoreState) => state.data.accounts);
   const status = useSelector((state: IStoreState) => state.status);
 
   return (
@@ -35,10 +39,16 @@ function SelectAccount(props: SelectAccountProps) {
         <Grid item>
           <FormControl variant="standard">
             <InputLabel id="account-select-label">Account</InputLabel>
-            <Select labelId="account-select-label" id="account-select" value={account.id}>
-              <MenuItem value={account.id}>
-                {account.name} - {account.id}
-              </MenuItem>
+            <Select labelId="account-select-label" id="account-select" value={account.id} onChange={(event: ChangeEvent<SelectProps>) =>
+              dispatch(swapAccount(event.target.value as number))
+            }>
+              {accounts.map((account) => {
+                return (
+                  <MenuItem key={account.id} value={account.id}>
+                    {account.name} - {account.id}
+                  </MenuItem>
+                );
+              })}
             </Select>
           </FormControl>
         </Grid>
