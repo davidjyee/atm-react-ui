@@ -9,13 +9,13 @@ import {
   SWAP_ACCOUNT,
 } from './types';
 import { commitTransaction } from './messageActions';
-import { Transaction, UserId, AccountId } from '../types';
+import { Transaction, UserId, AccountId, RoutingNumber } from '../types';
 import { DateTime } from 'luxon';
 
 export function deposit(
   by: UserId,
   amount: number,
-  into: AccountId
+  into: RoutingNumber
 ): ThunkResult<Promise<void>> {
   return async (dispatch: ThunkDispatch, getState: () => IStoreState): Promise<void> => {
     const state = getState();
@@ -55,7 +55,7 @@ export function deposit(
 export function withdraw(
   by: UserId,
   amount: number,
-  from: AccountId
+  from: RoutingNumber
 ): ThunkResult<Promise<void>> {
   return async (dispatch: ThunkDispatch, getState: () => IStoreState): Promise<void> => {
     const state = getState();
@@ -95,8 +95,8 @@ export function withdraw(
 export function transfer(
   by: UserId,
   amount: number,
-  origin: AccountId,
-  destination: AccountId,
+  origin: RoutingNumber,
+  destination: RoutingNumber,
   note: string
 ): ThunkResult<Promise<void>> {
   return async (dispatch: ThunkDispatch, getState: () => IStoreState): Promise<void> => {

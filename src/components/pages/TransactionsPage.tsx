@@ -111,7 +111,7 @@ function Transaction(props: TransactionProps) {
               <ListItemIcon>
                 <PublishIcon fontSize="large" />
               </ListItemIcon>
-              <ListItemText primary="Origin" secondary={props.origin} />
+              <ListItemText primary="Origin Routing Number" secondary={props.origin} />
             </ListItem>
           )}
           {props.destination && (
@@ -119,7 +119,10 @@ function Transaction(props: TransactionProps) {
               <ListItemIcon>
                 <GetAppIcon fontSize="large" />
               </ListItemIcon>
-              <ListItemText primary="Destination" secondary={props.destination} />
+              <ListItemText
+                primary="Destination Routing Number"
+                secondary={props.destination}
+              />
             </ListItem>
           )}
           <ListItem>

@@ -4,7 +4,7 @@ import { ThunkDispatch, IStoreState, ThunkResult } from '../../store';
 import { useDispatch, useSelector } from 'react-redux';
 import { deposit, withdraw, setParameter, transfer } from '../../actions';
 
-import { UserId, AccountId } from '../../types';
+import { UserId, AccountId, Account } from '../../types';
 
 import {
   Grid,
@@ -25,6 +25,8 @@ import {
   FormControl,
   MenuItem,
   SelectProps,
+  Switch,
+  FormControlLabel,
 } from '@material-ui/core';
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
 import {
@@ -116,6 +118,9 @@ const useStyles = makeStyles((theme: Theme) =>
     list: {
       borderLeft: `2px solid ${theme.palette.divider}`,
     },
+    fullWidth: {
+      flexGrow: 1,
+    },
   })
 );
 
@@ -195,7 +200,7 @@ function ActionCash(props: cashProps) {
               props.buttonAction(
                 status.id,
                 fieldCheck.amount ? fieldCheck.amount : 0,
-                account.id
+                account.routing
               )
             )
           }
@@ -210,6 +215,68 @@ function ActionCash(props: cashProps) {
   );
 }
 
+interface RoutingCheck {
+  error: boolean;
+  account?: Account;
+  routingNumber: number;
+  message?: string;
+}
+
+function validRouting(
+  id: string,
+  accounts?: Array<Account>,
+  routing?: string
+): RoutingCheck {
+  const numberRegex = /^\d+$/;
+
+  // Check if account id and routing is a number
+  const accountIsNumber = numberRegex.test(id);
+  if (!accountIsNumber) {
+    return {
+      error: true,
+      routingNumber: -1,
+      message: 'Must be a number',
+    };
+  }
+
+  // Check if account exists in accounts
+  const account = accounts?.find((account) => account.id === parseInt(id));
+
+  if (account) {
+    return {
+      error: false,
+      account,
+      routingNumber: account.routing,
+    };
+  }
+
+  // Check if routing number is valid
+  if (routing) {
+    const routingIsNumber = numberRegex.test(routing);
+
+    if (!routingIsNumber) {
+      return {
+        error: true,
+        routingNumber: -1,
+        message: 'Must be a number',
+      };
+    } else {
+      const routingNumber = parseInt(routing);
+
+      return {
+        error: false,
+        routingNumber,
+      };
+    }
+  }
+
+  return {
+    error: true,
+    routingNumber: -1,
+    message: 'No account found',
+  };
+}
+
 function ActionTransfer() {
   const classes = useStyles();
   const dispatch: ThunkDispatch = useDispatch();
@@ -218,29 +285,34 @@ function ActionTransfer() {
   const minimum = 1000;
 
   // Retrieve data about known accounts
+  const account = useSelector((state: IStoreState) => state.account);
   const accounts = useSelector((state: IStoreState) => state.data.accounts);
   const status = useSelector((state: IStoreState) => state.status);
 
-  // Retrieve data about which accounts are origin and destination
-  const originId = 'transfer-origin-select';
-  const originValue = useSelector(
-    (state: IStoreState) => state.pageData[originId]
-  ) as string;
-  const originAccount = useSelector((state: IStoreState) =>
-    state.data.accounts.find(
-      (account) => originValue && account.id === parseInt(originValue)
-    )
-  );
-
+  // Destination select
   const destinationSelectId = 'transfer-destination-select';
   const destinationSelectValue = useSelector(
     (state: IStoreState) => state.pageData[destinationSelectId]
   ) as string;
-  const destinationAccount = useSelector((state: IStoreState) =>
-    state.data.accounts.find(
-      (account) =>
-        destinationSelectValue && account.id === parseInt(destinationSelectValue)
-    )
+
+  // External wire transfer destination
+  const destinationWireSwitchId = 'transfer-destination-wire-switch';
+  const destinationWireSwitchValue = useSelector(
+    (state: IStoreState) => state.pageData[destinationWireSwitchId]
+  ) as boolean;
+
+  const destinationAccountFieldId = 'transfer-destination-account-field';
+  const destinationAccountFieldValue = useSelector(
+    (state: IStoreState) => state.pageData[destinationAccountFieldId]
+  ) as string;
+  const destinationRoutingFieldId = 'transfer-destination-routing-field';
+  const destinationRoutingFieldValue = useSelector(
+    (state: IStoreState) => state.pageData[destinationRoutingFieldId]
+  ) as string;
+  const destinationCheck = validRouting(
+    destinationWireSwitchValue ? destinationAccountFieldValue : destinationSelectValue,
+    accounts,
+    destinationRoutingFieldValue
   );
 
   // Retrieve data about the text field being used for money amount
@@ -248,22 +320,21 @@ function ActionTransfer() {
   const fieldValue = useSelector(
     (state: IStoreState) => state.pageData[fieldId]
   ) as string;
-  const fieldCheck = validAmount(fieldValue, originAccount?.balance, minimum);
+  const fieldCheck = validAmount(fieldValue, account.balance, minimum);
 
   // Retrieve data about the text field being used for the note
   const noteId = 'transfer-note';
   const noteValue = useSelector((state: IStoreState) => state.pageData[noteId]) as string;
 
   // Retrieve the origin and destination balances text
-  const originText = originAccount
-    ? getBalanceText(originAccount.balance, false, fieldCheck.amount)
-    : 'N/A';
-  const destinationText = destinationAccount
-    ? getBalanceText(destinationAccount.balance, true, fieldCheck.amount)
+  const originText = getBalanceText(account.balance, false, fieldCheck.amount);
+  const destinationText = destinationCheck.account
+    ? getBalanceText(destinationCheck.account.balance, true, fieldCheck.amount)
     : 'N/A';
 
   // Disable button if invalid
-  const disableButton = fieldCheck.error || !fieldValue || !originValue;
+  const disableButton: boolean =
+    fieldCheck.error || !fieldValue || destinationCheck.error;
 
   return (
     <Grid container direction="column" spacing={2}>
@@ -284,59 +355,85 @@ function ActionTransfer() {
         </List>
       </Grid>
       <Grid item>
-        <FormControl variant="filled" fullWidth>
-          <InputLabel shrink id="select-origin-account-label">
-            Origin Account
-          </InputLabel>
-          <Select
-            labelId="select-origin-account-label"
-            id="select-origin-account"
-            value={originValue ? originValue : ''}
-            displayEmpty
-            onChange={(event: ChangeEvent<SelectProps>) =>
-              dispatch(setParameter(originId, event.target.value))
-            }
-          >
-            <MenuItem value="" disabled>
-              Select origin account for transfer
-            </MenuItem>
-            {accounts.map((account) => {
-              return (
-                <MenuItem key={account.id} value={account.id}>
-                  {account.name} - {account.id}
+        <Grid container direction="row" spacing={2} alignItems="center">
+          <Grid item className={classes.fullWidth}>
+            <FormControl variant="filled" fullWidth>
+              <InputLabel shrink id="select-destination-account-label">
+                Destination Account
+              </InputLabel>
+              <Select
+                labelId="select-destination-account-label"
+                id="select-destination-account"
+                value={
+                  destinationSelectValue && !destinationWireSwitchValue
+                    ? destinationSelectValue
+                    : ''
+                }
+                displayEmpty
+                onChange={(event: ChangeEvent<SelectProps>) =>
+                  dispatch(setParameter(destinationSelectId, event.target.value))
+                }
+                disabled={destinationWireSwitchValue}
+              >
+                <MenuItem value="" disabled>
+                  Select destination account for transfer
                 </MenuItem>
-              );
-            })}
-          </Select>
-        </FormControl>
+                {accounts
+                  .filter((acc) => acc.id !== account.id)
+                  .map((account) => {
+                    return (
+                      <MenuItem key={account.id} value={account.id}>
+                        {account.name} - {account.id}
+                      </MenuItem>
+                    );
+                  })}
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={destinationWireSwitchValue}
+                  onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                    dispatch(setParameter(destinationWireSwitchId, event.target.checked))
+                  }
+                  name="destination-wire-switch"
+                />
+              }
+              label="External Wire"
+            />
+          </Grid>
+        </Grid>
       </Grid>
-      <Grid item>
-        <FormControl variant="filled" fullWidth>
-          <InputLabel shrink id="select-destination-account-label">
-            Destination Account
-          </InputLabel>
-          <Select
-            labelId="select-destination-account-label"
-            id="select-destination-account"
-            value={destinationSelectValue ? destinationSelectValue : ''}
-            displayEmpty
-            onChange={(event: ChangeEvent<SelectProps>) =>
-              dispatch(setParameter(destinationSelectId, event.target.value))
-            }
-          >
-            <MenuItem value="" disabled>
-              Select destination account for transfer
-            </MenuItem>
-            {accounts.map((account) => {
-              return (
-                <MenuItem key={account.id} value={account.id}>
-                  {account.name} - {account.id}
-                </MenuItem>
-              );
-            })}
-          </Select>
-        </FormControl>
-      </Grid>
+      {destinationWireSwitchValue && (
+        <Grid item>
+          <Grid container direction="row" spacing={2} alignItems="center">
+            <Grid item className={classes.fullWidth}>
+              <TextField
+                label="Destination Account Number"
+                variant="filled"
+                value={destinationAccountFieldValue}
+                fullWidth
+                onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                  dispatch(setParameter(destinationAccountFieldId, event.target.value))
+                }
+              />
+            </Grid>
+            <Grid item className={classes.fullWidth}>
+              <TextField
+                label="Destination Routing Number"
+                variant="filled"
+                value={destinationRoutingFieldValue}
+                fullWidth
+                onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                  dispatch(setParameter(destinationRoutingFieldId, event.target.value))
+                }
+              />
+            </Grid>
+          </Grid>
+        </Grid>
+      )}
       <Grid item>
         <TextField
           label="Amount to Transfer"
@@ -373,8 +470,8 @@ function ActionTransfer() {
               transfer(
                 status.id,
                 fieldCheck.amount ? fieldCheck.amount : 0,
-                parseInt(originValue),
-                parseInt(destinationSelectValue),
+                account.routing,
+                destinationCheck.routingNumber,
                 noteValue
               )
             )

@@ -82,7 +82,7 @@ function commitTransaction(state: data, transaction: Transaction, success: boole
 
     // Remove money from origin account if known account
     const originAccount = accountsCopy.find(
-      (account: Account) => account.id === transaction.origin
+      (account: Account) => account.routing === transaction.origin
     );
     if (originAccount) {
       originAccount.balance -= transaction.amount;
@@ -90,7 +90,7 @@ function commitTransaction(state: data, transaction: Transaction, success: boole
 
     // Add money to destination account if known account
     const destinationAccount = accountsCopy.find(
-      (account: Account) => account.id === transaction.destination
+      (account: Account) => account.routing === transaction.destination
     );
     if (destinationAccount) {
       destinationAccount.balance += transaction.amount;

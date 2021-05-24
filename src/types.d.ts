@@ -14,9 +14,10 @@ export interface AccessInfo {
 }
 
 export type AccountId = number;
+export type RoutingNumber = number;
 export interface Account {
   id: AccountId;
-  routing: number;
+  routing: RoutingNumber;
   type: string;
   name: string;
   balance: number;
@@ -25,8 +26,8 @@ export interface Account {
 export type TransactionId = number;
 export interface Transaction {
   id: TransactionId;
-  origin: AccountId | null;
-  destination: AccountId | null;
+  origin: RoutingNumber | null;
+  destination: RoutingNumber | null;
   initiator: UserId;
   type: string;
   time: DateTime;
