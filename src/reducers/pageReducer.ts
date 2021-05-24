@@ -1,5 +1,12 @@
 import { AnyAction } from 'redux';
-import { CLEAR_PARAMETERS, SET_PARAMETER, SWAP_ACCOUNT } from '../actions';
+import {
+  CLEAR_PARAMETERS,
+  SET_PARAMETER,
+  SWAP_ACCOUNT,
+  FINISH_WITHDRAW,
+  FINISH_DEPOSIT,
+  FINISH_TRANSFER,
+} from '../actions';
 
 interface pageData {
   [key: string]: unknown;
@@ -14,6 +21,9 @@ export default function pageReducer(state = initialState, action: AnyAction): pa
         ...state,
         [action.id]: action.value,
       };
+    case FINISH_WITHDRAW:
+    case FINISH_DEPOSIT:
+    case FINISH_TRANSFER:
     case SWAP_ACCOUNT:
     case CLEAR_PARAMETERS:
       return {};
