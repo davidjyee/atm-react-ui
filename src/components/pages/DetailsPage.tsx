@@ -5,12 +5,13 @@ import { useSelector } from 'react-redux';
 
 import {
   Card,
+  CardHeader,
   CardContent,
   ListItemText,
   ListItemIcon,
   ListItem,
   List,
-  Typography,
+  Divider,
 } from '@material-ui/core';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
 import {
@@ -36,9 +37,11 @@ export default function DetailsPage() {
     <div className={classes.root}>
       <Card className={classes.root}>
         <CardContent>
-          <Typography variant="h4" color="secondary">
-            {account.name}
-          </Typography>
+          <CardHeader
+            title={account.name}
+            titleTypographyProps={{ color: 'secondary', variant: 'h4' }}
+          />
+          <Divider />
           <List>
             <ListItem>
               <ListItemIcon>
