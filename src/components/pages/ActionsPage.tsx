@@ -1,8 +1,10 @@
-import React, { MouseEventHandler, ChangeEventHandler, ChangeEvent } from 'react';
+import React, { ChangeEvent } from 'react';
 
-import { ThunkDispatch, IStoreState } from '../../store';
+import { ThunkDispatch, IStoreState, ThunkResult } from '../../store';
 import { useDispatch, useSelector } from 'react-redux';
 import { deposit, withdraw, setParameter } from '../../actions';
+
+import { UserId, AccountId } from '../../types';
 
 import {
   Grid,
@@ -47,21 +49,37 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface cashProps {
+  fieldId: string;
   fieldText: string;
-  fieldValue: string;
+
   buttonText: string;
+  buttonAction: (
+    by: UserId,
+    amount: number,
+    account: AccountId
+  ) => ThunkResult<Promise<void>>;
 
-  onFieldChange: ChangeEventHandler;
-  onButtonClick: MouseEventHandler;
-
-  balanceText: string;
-  cashText: string;
-
-  check: AmountCheck;
+  toAccount: boolean;
 }
 
 function ActionCash(props: cashProps) {
   const classes = useStyles();
+
+  const dispatch = useDispatch();
+
+  // Retrieve data about user and account
+  const account = useSelector((state: IStoreState) => state.account);
+  const status = useSelector((state: IStoreState) => state.status);
+
+  // Retrieve data about current field being used
+  const fieldValue = useSelector((state: IStoreState) => state.pageData[props.fieldId]);
+  const fieldCheck = validAmount(
+    fieldValue,
+    props.toAccount ? status.cash : account.balance
+  );
+
+  const balanceText = getBalanceText(account.balance, props.toAccount, fieldCheck.amount);
+  const cashText = getBalanceText(status.cash, !props.toAccount, fieldCheck.amount);
 
   return (
     <Grid container direction="column" spacing={2}>
@@ -71,13 +89,13 @@ function ActionCash(props: cashProps) {
             <ListItemIcon>
               <AccountBalanceIcon fontSize="large" />
             </ListItemIcon>
-            <ListItemText primary="Account Balance" secondary={props.balanceText} />
+            <ListItemText primary="Account Balance" secondary={balanceText} />
           </ListItem>
           <ListItem>
             <ListItemIcon>
               <AccountBalanceWalletIcon fontSize="large" />
             </ListItemIcon>
-            <ListItemText primary="Cash" secondary={props.cashText} />
+            <ListItemText primary="Cash" secondary={cashText} />
           </ListItem>
         </List>
       </Grid>
@@ -88,18 +106,20 @@ function ActionCash(props: cashProps) {
             startAdornment: <InputAdornment position="start">$</InputAdornment>,
           }}
           variant="filled"
-          onChange={props.onFieldChange}
-          error={props.check.error && Boolean(props.fieldValue)}
-          helperText={Boolean(props.fieldValue) && props.check.message}
+          onChange={(event: ChangeEvent<HTMLInputElement>) =>
+            dispatch(setParameter(props.fieldId, event.target.value))
+          }
+          error={fieldCheck.error && Boolean(fieldValue)}
+          helperText={Boolean(fieldValue) && fieldCheck.message}
         />
       </Grid>
       <Divider />
       <Grid item>
         <Button
-          onClick={props.onButtonClick}
+          onClick={() => dispatch(props.buttonAction(status.id, fieldValue, account.id))}
           variant="contained"
           color="primary"
-          disabled={props.check.error || !props.fieldValue}
+          disabled={fieldCheck.error || !fieldValue}
         >
           {props.buttonText}
         </Button>
@@ -143,7 +163,7 @@ interface AmountCheck {
 }
 
 function validAmount(amount: string, limit?: number): AmountCheck {
-  const numberRegex: RegExp = /^\d+(\.\d+)?$/;
+  const numberRegex = /^\d+(\.\d+)?$/;
 
   const isNumber: boolean = Boolean(amount) && numberRegex.test(amount);
 
@@ -193,31 +213,17 @@ function getBalanceText(balance: number, addition: boolean, amount?: number): st
   }
 }
 
-export default function ActionsPage() {
+export default function ActionsPage(): JSX.Element {
   const dispatch: ThunkDispatch = useDispatch();
 
+  // Handle accordion expansion so only one action is visible at a time
   const actionExpanded = useSelector(
     (state: IStoreState) => state.pageData['actionExpanded']
   );
   const handleChange =
-    (panel: string) => (event: React.ChangeEvent<{}>, isExpanded: boolean) => {
+    (panel: string) => (event: React.ChangeEvent<unknown>, isExpanded: boolean) => {
       dispatch(setParameter('actionExpanded', isExpanded ? panel : null));
     };
-
-  const account = useSelector((state: IStoreState) => state.account);
-  const status = useSelector((state: IStoreState) => state.status);
-
-  const depositFieldId = 'deposit-field';
-  const depositFieldValue = useSelector(
-    (state: IStoreState) => state.pageData[depositFieldId]
-  );
-  const depositCheck = validAmount(depositFieldValue, status.cash);
-
-  const withdrawFieldId = 'withdraw-field';
-  const withdrawFieldValue = useSelector(
-    (state: IStoreState) => state.pageData[withdrawFieldId]
-  );
-  const withdrawCheck = validAmount(withdrawFieldValue, account.balance);
 
   const classes = useStyles();
 
@@ -235,17 +241,10 @@ export default function ActionsPage() {
         <AccordionDetails>
           <ActionCash
             fieldText="Amount to Deposit"
-            fieldValue={depositFieldValue}
             buttonText="Deposit"
-            onButtonClick={() =>
-              dispatch(deposit(status.id, depositFieldValue, account.id))
-            }
-            onFieldChange={(event: ChangeEvent<HTMLInputElement>) =>
-              dispatch(setParameter(depositFieldId, event.target.value))
-            }
-            balanceText={getBalanceText(account.balance, true, depositCheck.amount)}
-            cashText={getBalanceText(status.cash, false, depositCheck.amount)}
-            check={depositCheck}
+            buttonAction={deposit}
+            fieldId="deposit-field"
+            toAccount={true}
           />
         </AccordionDetails>
       </Accordion>
@@ -261,17 +260,10 @@ export default function ActionsPage() {
         <AccordionDetails>
           <ActionCash
             fieldText="Amount to Withdraw"
-            fieldValue={withdrawFieldValue}
             buttonText="Withdraw"
-            onButtonClick={() =>
-              dispatch(withdraw(status.id, withdrawFieldValue, account.id))
-            }
-            onFieldChange={(event: ChangeEvent<HTMLInputElement>) =>
-              dispatch(setParameter(withdrawFieldId, event.target.value))
-            }
-            balanceText={getBalanceText(account.balance, false, withdrawCheck.amount)}
-            cashText={getBalanceText(status.cash, true, withdrawCheck.amount)}
-            check={withdrawCheck}
+            buttonAction={withdraw}
+            fieldId="withdraw-field"
+            toAccount={false}
           />
         </AccordionDetails>
       </Accordion>

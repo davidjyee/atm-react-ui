@@ -4,7 +4,7 @@ import ActionsPage from './ActionsPage';
 import DetailsPage from './DetailsPage';
 import TransactionsPage from './TransactionsPage';
 
-export default function MainRouter() {
+export default function MainRouter(): JSX.Element {
   return (
     <Switch>
       <Route path="/actions">

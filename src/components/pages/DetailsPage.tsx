@@ -29,7 +29,7 @@ const useStyles = makeStyles(() =>
   })
 );
 
-export default function DetailsPage() {
+export default function DetailsPage(): JSX.Element {
   const account = useSelector((state: IStoreState) => state.account);
   const classes = useStyles();
 

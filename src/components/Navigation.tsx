@@ -4,7 +4,7 @@ import { Tabs, Tab } from '@material-ui/core';
 
 import { useLocation, useHistory } from 'react-router-dom';
 
-export default function Navigation() {
+export default function Navigation(): JSX.Element {
   const location = useLocation();
   const history = useHistory();
 
@@ -13,7 +13,7 @@ export default function Navigation() {
       orientation="vertical"
       variant="scrollable"
       value={location.pathname}
-      onChange={(event: React.ChangeEvent<{}>, newValue: string) => {
+      onChange={(event: React.ChangeEvent<unknown>, newValue: string) => {
         history.push(newValue);
       }}
     >

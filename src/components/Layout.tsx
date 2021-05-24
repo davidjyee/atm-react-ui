@@ -39,7 +39,6 @@ function SelectAccount(props: SelectAccountProps) {
               labelId="demo-simple-select-filled-label"
               id="demo-simple-select-filled"
               value={account.id}
-              onChange={() => {}}
             >
               <MenuItem value={account.id}>
                 {account.name} - {account.id}
@@ -72,7 +71,7 @@ function SelectAccount(props: SelectAccountProps) {
 }
 
 interface LayoutProps {
-  children: any;
+  children: JSX.Element;
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -111,7 +110,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-export default function Layout(props: LayoutProps) {
+export default function Layout(props: LayoutProps): JSX.Element {
   const classes = useStyles();
   const dispatch: ThunkDispatch = useDispatch();
   const show = useSelector((state: IStoreState) => state.messages.show);

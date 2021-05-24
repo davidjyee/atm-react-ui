@@ -8,11 +8,11 @@ import {
 
 import { Transaction } from '../types';
 
-const resourceName: string = 'atm-esx-react-example';
+const resourceName = 'atm-esx-react-example';
 
 async function safeJSONParse(res: Response) {
   if (res.ok) {
-    const json: any = await res.json();
+    const json = await res.json();
 
     return json;
   } else {
@@ -61,7 +61,7 @@ export function commitTransaction(
       body: JSON.stringify(transaction),
     });
 
-    const json: any = await safeJSONParse(res);
+    const json = await safeJSONParse(res);
 
     dispatch({
       type: FINISH_TRANSACTION_MESSAGE,

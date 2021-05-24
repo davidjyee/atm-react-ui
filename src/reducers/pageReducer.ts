@@ -2,7 +2,7 @@ import { AnyAction } from 'redux';
 import { SET_PARAMETER } from '../actions';
 
 interface pageData {
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 const initialState: pageData = {};

@@ -60,7 +60,7 @@ function Transaction(props: TransactionProps) {
     <Accordion
       className={classes.root}
       expanded={expanded}
-      onChange={(event: ChangeEvent<{}>, isExpanded: boolean) => setExpanded(isExpanded)}
+      onChange={(event: ChangeEvent<unknown>, isExpanded: boolean) => setExpanded(isExpanded)}
     >
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <Grid container direction="column">
@@ -145,7 +145,7 @@ function Transaction(props: TransactionProps) {
   );
 }
 
-export default function TransactionsPage() {
+export default function TransactionsPage(): JSX.Element {
   const classes = useStyles();
 
   const transactions: Array<TransactionProps> = [

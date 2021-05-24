@@ -6,7 +6,8 @@
     "prettier",
     "prettier/react",
     "prettier/@typescript-eslint",
-    "plugin:prettier/recommended"
+    "plugin:prettier/recommended",
+    "plugin:@typescript-eslint/recommended"
   ],
   "plugins": ["react", "@typescript-eslint"],
   "env": {
