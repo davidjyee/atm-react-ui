@@ -34,7 +34,7 @@ export default function Navigation(): JSX.Element {
       />
       <Tab
         disabled={!allowedTabs.includes('transactions')}
-        label="Transactions"
+        label="Transaction Log"
         value="/transactions"
       />
     </Tabs>
