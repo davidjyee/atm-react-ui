@@ -6,6 +6,8 @@ import {
   FINISH_TRANSACTION_MESSAGE,
 } from './types';
 
+import { Transaction } from '../types';
+
 const resourceName: string = 'atm-esx-react-example';
 
 async function safeJSONParse(res: Response) {
@@ -42,7 +44,9 @@ export function showUI(visibility: boolean): ThunkResult<Promise<void>> {
   };
 }
 
-export function commitDeposit(amount: number): ThunkResult<Promise<boolean>> {
+export function commitTransaction(
+  transaction: Transaction
+): ThunkResult<Promise<boolean>> {
   return async (dispatch: ThunkDispatch): Promise<boolean> => {
     dispatch({
       type: START_TRANSACTION_MESSAGE,
@@ -54,36 +58,7 @@ export function commitDeposit(amount: number): ThunkResult<Promise<boolean>> {
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
       },
-      body: JSON.stringify({
-        amount,
-      }),
-    });
-
-    const json: any = await safeJSONParse(res);
-
-    dispatch({
-      type: FINISH_TRANSACTION_MESSAGE,
-    });
-
-    return json.success;
-  };
-}
-
-export function commitWithdraw(amount: number): ThunkResult<Promise<boolean>> {
-  return async (dispatch: ThunkDispatch): Promise<boolean> => {
-    dispatch({
-      type: START_TRANSACTION_MESSAGE,
-    });
-
-    //Deposit the amount
-    const res: Response = await fetch(`https://${resourceName}/withdraw`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: JSON.stringify({
-        amount,
-      }),
+      body: JSON.stringify(transaction),
     });
 
     const json: any = await safeJSONParse(res);

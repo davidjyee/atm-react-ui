@@ -158,7 +158,9 @@ export default function ActionsPage() {
             fieldText="Amount to Deposit"
             fieldValue={depositFieldValue}
             buttonText="Deposit"
-            onButtonClick={() => dispatch(deposit(depositFieldValue))}
+            onButtonClick={() =>
+              dispatch(deposit(status.id, depositFieldValue, account.id))
+            }
             onFieldChange={(event: ChangeEvent<HTMLInputElement>) =>
               dispatch(setParameter(depositFieldId, parseInt(event.target.value)))
             }
@@ -178,7 +180,9 @@ export default function ActionsPage() {
             fieldText="Amount to Withdraw"
             fieldValue={withdrawFieldValue}
             buttonText="Withdraw"
-            onButtonClick={() => dispatch(withdraw(withdrawFieldValue))}
+            onButtonClick={() =>
+              dispatch(withdraw(status.id, withdrawFieldValue, account.id))
+            }
             onFieldChange={(event: ChangeEvent<HTMLInputElement>) =>
               dispatch(setParameter(withdrawFieldId, parseInt(event.target.value)))
             }
