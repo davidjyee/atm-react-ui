@@ -15,7 +15,9 @@ import {
 import { makeStyles, createStyles } from '@material-ui/core/styles';
 import {
   AccountBalance as AccountBalanceIcon,
-  AccountBox as AccountBoxIcon,
+  Assignment as AssignmentIcon,
+  SupervisorAccount as SupervisorAccountIcon,
+  Class as ClassIcon,
 } from '@material-ui/icons';
 
 const useStyles = makeStyles(() =>
@@ -40,15 +42,27 @@ export default function DetailsPage() {
           <List>
             <ListItem>
               <ListItemIcon>
-                <AccountBoxIcon fontSize="large" />
+                <ClassIcon fontSize="large" />
+              </ListItemIcon>
+              <ListItemText primary="Account Type" secondary={account.type} />
+            </ListItem>
+            <ListItem>
+              <ListItemIcon>
+                <AssignmentIcon fontSize="large" />
               </ListItemIcon>
               <ListItemText primary="Account Number" secondary={account.id} />
             </ListItem>
             <ListItem>
               <ListItemIcon>
+                <SupervisorAccountIcon fontSize="large" />
+              </ListItemIcon>
+              <ListItemText primary="Owner State ID" secondary={account.owner} />
+            </ListItem>
+            <ListItem>
+              <ListItemIcon>
                 <AccountBalanceIcon fontSize="large" />
               </ListItemIcon>
-              <ListItemText primary="Account Balance" secondary={`$${account.balance}`} />
+              <ListItemText primary="Balance" secondary={`$${account.balance}`} />
             </ListItem>
           </List>
         </CardContent>
