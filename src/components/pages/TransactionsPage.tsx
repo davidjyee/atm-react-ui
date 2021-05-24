@@ -45,7 +45,7 @@ const useStyles = makeStyles((theme: Theme) =>
       color: theme.palette.error.main,
     },
     headingTransfer: {
-      color: theme.palette.primary.main,
+      color: theme.palette.secondary.main,
     },
     secondaryHeading: {
       color: theme.palette.text.secondary,
