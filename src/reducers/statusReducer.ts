@@ -6,7 +6,7 @@ import {
   FINISH_WITHDRAW,
 } from '../actions';
 
-import { User } from '../types';
+import { User, Transaction } from '../types';
 
 interface Status extends User {
   cash: number;
@@ -27,12 +27,14 @@ function transact(account: Status, action: AnyAction): Status {
   };
 
   if (action.success) {
+    const transaction: Transaction = action.transaction;
+
     switch (action.type) {
       case FINISH_DEPOSIT:
-        newState.cash -= action.amount;
+        newState.cash -= transaction.amount;
         break;
       case FINISH_WITHDRAW:
-        newState.cash += action.amount;
+        newState.cash += transaction.amount;
         break;
       default:
         break;

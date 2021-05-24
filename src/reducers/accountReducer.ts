@@ -6,7 +6,7 @@ import {
   FINISH_WITHDRAW,
 } from '../actions';
 
-import { Account } from '../types';
+import { Account, Transaction } from '../types';
 
 interface AccountState extends Account {
   transactionLock: boolean;
@@ -30,12 +30,14 @@ function transact(account: AccountState, action: AnyAction): AccountState {
   };
 
   if (action.success) {
+    const transaction: Transaction = action.transaction;
+
     switch (action.type) {
       case FINISH_DEPOSIT:
-        newState.balance += parseInt(action.amount);
+        newState.balance += transaction.amount;
         break;
       case FINISH_WITHDRAW:
-        newState.balance -= parseInt(action.amount);
+        newState.balance -= transaction.amount;
         break;
       default:
         break;
