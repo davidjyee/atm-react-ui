@@ -34,7 +34,7 @@ export default function DetailsPage() {
     <div className={classes.root}>
       <Card className={classes.root}>
         <CardContent>
-          <Typography variant="h4" color="textPrimary">
+          <Typography variant="h4" color="secondary">
             {account.name}
           </Typography>
           <List>
@@ -42,7 +42,7 @@ export default function DetailsPage() {
               <ListItemIcon>
                 <AccountBoxIcon fontSize="large" />
               </ListItemIcon>
-              <ListItemText primary="Account Number" secondary={account.number} />
+              <ListItemText primary="Account Number" secondary={account.id} />
             </ListItem>
             <ListItem>
               <ListItemIcon>

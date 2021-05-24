@@ -6,21 +6,24 @@ import {
   FINISH_WITHDRAW,
 } from '../actions';
 
-interface account {
-  name: string;
-  number: number;
-  balance: number;
+import { Account } from '../types';
+
+interface AccountState extends Account {
   transactionLock: boolean;
 }
 
-const initialState: account = {
+const initialState: AccountState = {
   name: 'Personal',
-  number: 1234567890,
+  type: 'Personal',
+  owner: 816,
+  accessors: [],
+  transactions: [],
+  id: 1234567890,
   balance: 100,
   transactionLock: false,
 };
 
-function transact(account: account, action: AnyAction): account {
+function transact(account: AccountState, action: AnyAction): AccountState {
   const newState = {
     ...account,
     transactionLock: false,
@@ -42,7 +45,10 @@ function transact(account: account, action: AnyAction): account {
   return newState;
 }
 
-export default function accountReducer(state = initialState, action: AnyAction): account {
+export default function accountReducer(
+  state: AccountState = initialState,
+  action: AnyAction
+): AccountState {
   switch (action.type) {
     case START_WITHDRAW:
     case START_DEPOSIT:

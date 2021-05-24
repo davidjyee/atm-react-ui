@@ -1,4 +1,4 @@
-import React, { MouseEventHandler, ChangeEventHandler } from 'react';
+import React, { MouseEventHandler, ChangeEventHandler, ChangeEvent } from 'react';
 
 import { ThunkDispatch, IStoreState } from '../../store';
 import { useDispatch, useSelector } from 'react-redux';
@@ -31,9 +31,14 @@ const useStyles = makeStyles((theme: Theme) =>
     root: {
       width: '100%',
     },
-    heading: {
-      fontSize: theme.typography.pxToRem(15),
-      fontWeight: theme.typography.fontWeightRegular,
+    headingDeposit: {
+      color: theme.palette.success.main,
+    },
+    headingWithdraw: {
+      color: theme.palette.error.main,
+    },
+    headingTransfer: {
+      color: theme.palette.secondary.main,
     },
     list: {
       borderLeft: `2px solid ${theme.palette.divider}`,
@@ -130,12 +135,12 @@ export default function ActionsPage() {
 
   const depositFieldId = 'deposit-field';
   const depositFieldValue = useSelector(
-    (state: IStoreState) => state.data[depositFieldId]
+    (state: IStoreState) => state.pageData[depositFieldId]
   );
 
   const withdrawFieldId = 'withdraw-field';
   const withdrawFieldValue = useSelector(
-    (state: IStoreState) => state.data[withdrawFieldId]
+    (state: IStoreState) => state.pageData[withdrawFieldId]
   );
 
   const classes = useStyles();
@@ -144,7 +149,9 @@ export default function ActionsPage() {
     <div className={classes.root}>
       <Accordion>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography className={classes.heading}>Deposit</Typography>
+          <Typography className={classes.headingDeposit} variant="h4">
+            Deposit
+          </Typography>
         </AccordionSummary>
         <AccordionDetails>
           <ActionCash
@@ -152,7 +159,7 @@ export default function ActionsPage() {
             fieldValue={depositFieldValue}
             buttonText="Deposit"
             onButtonClick={() => dispatch(deposit(depositFieldValue))}
-            onFieldChange={(event) =>
+            onFieldChange={(event: ChangeEvent<HTMLInputElement>) =>
               dispatch(setParameter(depositFieldId, parseInt(event.target.value)))
             }
             balance={account.balance}
@@ -162,7 +169,9 @@ export default function ActionsPage() {
       </Accordion>
       <Accordion>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography className={classes.heading}>Withdraw</Typography>
+          <Typography className={classes.headingWithdraw} variant="h4">
+            Withdraw
+          </Typography>
         </AccordionSummary>
         <AccordionDetails>
           <ActionCash
@@ -170,7 +179,7 @@ export default function ActionsPage() {
             fieldValue={withdrawFieldValue}
             buttonText="Withdraw"
             onButtonClick={() => dispatch(withdraw(withdrawFieldValue))}
-            onFieldChange={(event) =>
+            onFieldChange={(event: ChangeEvent<HTMLInputElement>) =>
               dispatch(setParameter(withdrawFieldId, parseInt(event.target.value)))
             }
             balance={account.balance}
@@ -180,7 +189,9 @@ export default function ActionsPage() {
       </Accordion>
       <Accordion>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography className={classes.heading}>Wire Transfer</Typography>
+          <Typography className={classes.headingTransfer} variant="h4">
+            Transfer
+          </Typography>
         </AccordionSummary>
         <AccordionDetails>
           <ActionTransfer />

@@ -6,21 +6,21 @@ import {
   FINISH_WITHDRAW,
 } from '../actions';
 
-interface status {
-  name: string;
-  id: number;
+import { User } from '../types';
+
+interface Status extends User {
   cash: number;
   transactionLock: boolean;
 }
 
-const initialState: status = {
+const initialState: Status = {
   name: 'Akihiro Sakamoto',
   id: 816,
   cash: 100,
   transactionLock: false,
 };
 
-function transact(account: status, action: AnyAction): status {
+function transact(account: Status, action: AnyAction): Status {
   const newState = {
     ...account,
     transactionLock: false,
@@ -42,7 +42,10 @@ function transact(account: status, action: AnyAction): status {
   return newState;
 }
 
-export default function statusReducer(state = initialState, action: AnyAction): status {
+export default function statusReducer(
+  state: Status = initialState,
+  action: AnyAction
+): Status {
   switch (action.type) {
     case START_WITHDRAW:
     case START_DEPOSIT:

@@ -8,5 +8,5 @@ export default combineReducers({
   messages: messageReducer,
   account: accountReducer,
   status: statusReducer,
-  data: pageReducer,
+  pageData: pageReducer,
 });

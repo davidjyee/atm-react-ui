@@ -38,11 +38,11 @@ function SelectAccount(props: SelectAccountProps) {
             <Select
               labelId="demo-simple-select-filled-label"
               id="demo-simple-select-filled"
-              value={account.number}
+              value={account.id}
               onChange={() => {}}
             >
-              <MenuItem value={account.number}>
-                {account.name} - {account.number}
+              <MenuItem value={account.id}>
+                {account.name} - {account.id}
               </MenuItem>
             </Select>
           </FormControl>

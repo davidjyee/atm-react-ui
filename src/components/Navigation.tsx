@@ -14,7 +14,6 @@ export default function Navigation() {
       variant="scrollable"
       value={location.pathname}
       onChange={(event: React.ChangeEvent<{}>, newValue: string) => {
-        console.log(newValue);
         history.push(newValue);
       }}
     >
