@@ -57,7 +57,7 @@ interface cashProps {
   balanceText: string;
   cashText: string;
 
-  error: boolean;
+  check: AmountCheck;
 }
 
 function ActionCash(props: cashProps) {
@@ -89,8 +89,8 @@ function ActionCash(props: cashProps) {
           }}
           variant="filled"
           onChange={props.onFieldChange}
-          error={props.error}
-          helperText={props.error ? 'Must be a positive number' : ''}
+          error={props.check.error && Boolean(props.fieldValue)}
+          helperText={Boolean(props.fieldValue) && props.check.message}
         />
       </Grid>
       <Divider />
@@ -99,7 +99,7 @@ function ActionCash(props: cashProps) {
           onClick={props.onButtonClick}
           variant="contained"
           color="primary"
-          disabled={props.error || !props.fieldValue}
+          disabled={props.check.error || !props.fieldValue}
         >
           {props.buttonText}
         </Button>
@@ -136,35 +136,80 @@ function ActionTransfer() {
   );
 }
 
+interface AmountCheck {
+  error: boolean;
+  amount?: number;
+  message?: string;
+}
+
+function validAmount(amount: string, limit?: number): AmountCheck {
+  const numberRegex: RegExp = /^\d+(\.\d+)?$/;
+
+  const isNumber: boolean = Boolean(amount) && numberRegex.test(amount);
+
+  if (!isNumber) {
+    return {
+      error: true,
+      message: 'Must be a positive number',
+    };
+  }
+
+  const parsedNumber: number = parseFloat(amount);
+
+  const isPositive: boolean = parsedNumber > 0;
+  const isBigEnough: boolean = parsedNumber >= 0.01;
+  const isSmallerThanLimit: boolean = !limit || parsedNumber <= limit;
+
+  if (!isPositive) {
+    return {
+      error: true,
+      message: 'Must be a postive number',
+    };
+  } else if (!isBigEnough) {
+    return {
+      error: true,
+      message: 'Must be larger than one cent',
+    };
+  } else if (!isSmallerThanLimit) {
+    return {
+      error: true,
+      message: 'Must have the requested amount',
+    };
+  } else {
+    return {
+      error: false,
+      amount: parsedNumber,
+    };
+  }
+}
+
+function getBalanceText(balance: number, addition: boolean, amount?: number): string {
+  if (!amount) {
+    return `$${balance}`;
+  } else if (addition) {
+    return `$${balance} + $${amount} = $${balance + amount}`;
+  } else {
+    return `$${balance} - $${amount} = $${balance - amount}`;
+  }
+}
+
 export default function ActionsPage() {
   const dispatch: ThunkDispatch = useDispatch();
 
   const account = useSelector((state: IStoreState) => state.account);
   const status = useSelector((state: IStoreState) => state.status);
 
-  const numberRegex: RegExp = /^\d+(\.\d+)?$/;
-
   const depositFieldId = 'deposit-field';
   const depositFieldValue = useSelector(
     (state: IStoreState) => state.pageData[depositFieldId]
   );
-  const depositValid: boolean =
-    depositFieldValue &&
-    numberRegex.test(depositFieldValue) &&
-    parseFloat(depositFieldValue) >= 0.01 &&
-    parseFloat(depositFieldValue) <= status.cash;
-  const depositValue: number = depositValid ? parseFloat(depositFieldValue) : 0;
+  const depositCheck = validAmount(depositFieldValue, status.cash);
 
   const withdrawFieldId = 'withdraw-field';
   const withdrawFieldValue = useSelector(
     (state: IStoreState) => state.pageData[withdrawFieldId]
   );
-  const withdrawValid: boolean =
-    withdrawFieldValue &&
-    numberRegex.test(withdrawFieldValue) &&
-    parseFloat(withdrawFieldValue) >= 0.01 &&
-    parseFloat(withdrawFieldValue) <= account.balance;
-  const withdrawValue: number = withdrawValid ? parseFloat(withdrawFieldValue) : 0;
+  const withdrawCheck = validAmount(withdrawFieldValue, account.balance);
 
   const classes = useStyles();
 
@@ -187,13 +232,9 @@ export default function ActionsPage() {
             onFieldChange={(event: ChangeEvent<HTMLInputElement>) =>
               dispatch(setParameter(depositFieldId, event.target.value))
             }
-            balanceText={`$${account.balance} + $${depositValue} = $${
-              account.balance + depositValue
-            }`}
-            cashText={`$${status.cash} - $${depositValue} = $${
-              status.cash - depositValue
-            }`}
-            error={Boolean(depositFieldValue) && !depositValid}
+            balanceText={getBalanceText(account.balance, true, depositCheck.amount)}
+            cashText={getBalanceText(status.cash, false, depositCheck.amount)}
+            check={depositCheck}
           />
         </AccordionDetails>
       </Accordion>
@@ -214,13 +255,9 @@ export default function ActionsPage() {
             onFieldChange={(event: ChangeEvent<HTMLInputElement>) =>
               dispatch(setParameter(withdrawFieldId, event.target.value))
             }
-            balanceText={`$${account.balance} - $${withdrawValue} = $${
-              account.balance - withdrawValue
-            }`}
-            cashText={`$${status.cash} + $${withdrawValue} = $${
-              status.cash + withdrawValue
-            }`}
-            error={Boolean(withdrawFieldValue) && !withdrawValid}
+            balanceText={getBalanceText(account.balance, false, withdrawCheck.amount)}
+            cashText={getBalanceText(status.cash, true, withdrawCheck.amount)}
+            check={withdrawCheck}
           />
         </AccordionDetails>
       </Accordion>
