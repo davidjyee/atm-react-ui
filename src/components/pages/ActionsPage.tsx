@@ -72,7 +72,9 @@ function ActionCash(props: cashProps) {
   const status = useSelector((state: IStoreState) => state.status);
 
   // Retrieve data about current field being used
-  const fieldValue = useSelector((state: IStoreState) => state.pageData[props.fieldId]);
+  const fieldValue: string = useSelector(
+    (state: IStoreState) => state.pageData[props.fieldId]
+  ) as string;
   const fieldCheck = validAmount(
     fieldValue,
     props.toAccount ? status.cash : account.balance
@@ -116,7 +118,15 @@ function ActionCash(props: cashProps) {
       <Divider />
       <Grid item>
         <Button
-          onClick={() => dispatch(props.buttonAction(status.id, fieldValue, account.id))}
+          onClick={() =>
+            dispatch(
+              props.buttonAction(
+                status.id,
+                fieldCheck.amount ? fieldCheck.amount : 0,
+                account.id
+              )
+            )
+          }
           variant="contained"
           color="primary"
           disabled={fieldCheck.error || !fieldValue}
@@ -163,7 +173,8 @@ interface AmountCheck {
 }
 
 function validAmount(amount: string, limit?: number): AmountCheck {
-  const numberRegex = /^\d+(\.\d+)?$/;
+  const numberRegex = /^\d+\.?\d*$/;
+  const twoDecRegex = /^\d+\.(?!\d{3,})|^\d+$/;
 
   const isNumber: boolean = Boolean(amount) && numberRegex.test(amount);
 
@@ -177,7 +188,7 @@ function validAmount(amount: string, limit?: number): AmountCheck {
   const parsedNumber: number = parseFloat(amount);
 
   const isPositive: boolean = parsedNumber > 0;
-  const isBigEnough: boolean = parsedNumber >= 0.01;
+  const isBigEnough: boolean = twoDecRegex.test(amount);
   const isSmallerThanLimit: boolean = !limit || parsedNumber <= limit;
 
   if (!isPositive) {

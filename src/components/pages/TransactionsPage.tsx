@@ -60,7 +60,9 @@ function Transaction(props: TransactionProps) {
     <Accordion
       className={classes.root}
       expanded={expanded}
-      onChange={(event: ChangeEvent<unknown>, isExpanded: boolean) => setExpanded(isExpanded)}
+      onChange={(event: ChangeEvent<unknown>, isExpanded: boolean) =>
+        setExpanded(isExpanded)
+      }
     >
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <Grid container direction="column">
