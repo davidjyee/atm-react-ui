@@ -34,12 +34,8 @@ function SelectAccount(props: SelectAccountProps) {
       <Grid container direction="row" spacing={1} alignItems="center">
         <Grid item>
           <FormControl variant="standard">
-            <InputLabel id="demo-simple-select-filled-label">Account</InputLabel>
-            <Select
-              labelId="demo-simple-select-filled-label"
-              id="demo-simple-select-filled"
-              value={account.id}
-            >
+            <InputLabel id="account-select-label">Account</InputLabel>
+            <Select labelId="account-select-label" id="account-select" value={account.id}>
               <MenuItem value={account.id}>
                 {account.name} - {account.id}
               </MenuItem>

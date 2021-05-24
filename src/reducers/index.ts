@@ -6,7 +6,7 @@ import pageReducer from './pageReducer';
 import interfaceReducer from './interfaceReducer';
 
 export default combineReducers({
-  messages: messageReducer,
+  data: messageReducer,
   account: accountReducer,
   status: statusReducer,
   pageData: pageReducer,

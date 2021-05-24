@@ -4,6 +4,8 @@ import {
   FINISH_DEPOSIT,
   START_WITHDRAW,
   FINISH_WITHDRAW,
+  START_TRANSFER,
+  FINISH_TRANSFER,
 } from '../actions';
 
 import { Account, Transaction } from '../types';
@@ -15,10 +17,8 @@ interface AccountState extends Account {
 const initialState: AccountState = {
   name: 'Personal',
   type: 'Personal',
-  owner: 816,
-  accessors: [],
-  transactions: [],
   id: 1234567890,
+  routing: 100,
   balance: 100,
   transactionLock: false,
 };
@@ -39,6 +39,13 @@ function transact(account: AccountState, action: AnyAction): AccountState {
       case FINISH_WITHDRAW:
         newState.balance -= transaction.amount;
         break;
+      case FINISH_TRANSFER:
+        if (transaction.origin === newState.id) {
+          newState.balance += transaction.amount;
+        } else if (transaction.destination === newState.id) {
+          newState.balance -= transaction.amount;
+        }
+        break;
       default:
         break;
     }
@@ -54,12 +61,14 @@ export default function accountReducer(
   switch (action.type) {
     case START_WITHDRAW:
     case START_DEPOSIT:
+    case START_TRANSFER:
       return {
         ...state,
         transactionLock: true,
       };
     case FINISH_WITHDRAW:
     case FINISH_DEPOSIT:
+    case FINISH_TRANSFER:
       return transact(state, action);
     default:
       return state;

@@ -154,7 +154,7 @@ function Transaction(props: TransactionProps) {
 export default function TransactionsPage(): JSX.Element {
   const classes = useStyles();
 
-  const transactions = useSelector((state: IStoreState) => state.messages.transactions);
+  const transactions = useSelector((state: IStoreState) => state.data.transactions);
 
   return (
     <div className={classes.root}>
