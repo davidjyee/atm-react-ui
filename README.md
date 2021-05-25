@@ -1,19 +1,9 @@
-# ESX NUI React Template
+# ATM React UI Example
 
-*This is an internal template created by @Taso and used by the ESX Dev Team 
-to easily boilerplate any new NUI modules planned to use React (or
-Preact with minor changes). This is also used by the internal `esx-cli`
-with the `React` template.*
+This is an example React UI for an ATM. It's been built using the ESX NUI React Template by @Taso.
 
-Although this is an internal ESX Team template, it works perfectly fine
-if you wish to use it for any other purpose. 🎉
-
-## Essential Packages
-* React - v17.0
-* TypeScript - v4.0
-* Webpack - v5.10
-* Prettier - v2.2
-* ESLint - v7.16
+It's configured to be used in a FiveM NUI resource, and the resource can be found here:
+https://github.com/davidjyee/atm-react-nui-example
 
 ## First Install
 As with any other Node environment, you must first run one of the following commands:
@@ -58,31 +48,6 @@ project directory as shown:
 
 *These builds differ in a couple of ways, most specifically: process.env.NODE_ENV, 
 source maps, minification, and the inclusion of a react-devtools module*
-
-## Using React Dev-Tools
-
-When in development mode, the builds include with them a standalone 
-React DevTools bundle, that allows access to `react-devtools` comparable
-to the browser environment.
-
-First ensure you have `react-devtools` installed globally 
-by running one of the following commands:
-
-```
-# Yarn
-yarn global add react-devtools
-
-# NPM
-npm install -g react-devtools
-```
-
-Then run this command from your terminal environment:
-```
-react-devtools
-```
-
-Now start your FiveM script with the development build, and you should 
-have access to the `react-devtools` just as you would in the browser!
 
 ## Linting and Style
 This template also comes with a preconfigured ESLint and Prettier config.
