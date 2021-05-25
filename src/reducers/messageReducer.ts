@@ -7,6 +7,9 @@ import {
   START_ADD_ACCESS_MESSAGE,
   FINISH_ADD_ACCESS_MESSAGE,
   FINISH_REMOVE_ACCESS_MESSAGE,
+  FINISH_EDIT_ACCESS_MESSAGE,
+  START_REMOVE_ACCESS_MESSAGE,
+  START_EDIT_ACCESS_MESSAGE,
 } from '../actions';
 import { AccessId, AccessInfo, Account, Transaction } from '../types';
 import { DateTime } from 'luxon';
@@ -24,13 +27,13 @@ const initialState: data = {
       id: 0,
       userId: 816,
       accountId: 1234567890,
-      accessLevel: 0,
+      accessLevel: 1,
     },
     {
       id: 1,
       userId: 816,
       accountId: 9876543210,
-      accessLevel: 0,
+      accessLevel: 1,
     },
   ],
   accounts: [
@@ -128,10 +131,36 @@ function addAccess(state: data, access: AccessInfo, success: boolean) {
   }
 }
 
-function removeAccess(state: data, access: AccessId, success: boolean) {
+function removeAccess(state: data, id: AccessId, success: boolean) {
   if (success) {
-    const accessMap = state.access.filter((info) => info.id !== access);
+    const accessMap = state.access.filter((info) => info.id !== id);
 
+    return {
+      access: accessMap,
+    };
+  } else {
+    return {};
+  }
+}
+
+function editAccess(
+  state: data,
+  id: AccessId,
+  accessLevel: AccessLevel,
+  success: boolean
+) {
+  if (success) {
+    const accessMap = state.access.filter((info) => info.id !== id);
+
+    const access: AccessInfo = {
+      id,
+      userId: -1,
+      accountId: -1,
+      ...state.access.find((info) => info.id === id),
+      accessLevel,
+    };
+
+    accessMap.push(access);
     return {
       access: accessMap,
     };
@@ -145,6 +174,8 @@ export default function messageReducer(state = initialState, action: AnyAction):
     case START_SHOW_UI:
     case START_TRANSACTION_MESSAGE:
     case START_ADD_ACCESS_MESSAGE:
+    case START_REMOVE_ACCESS_MESSAGE:
+    case START_EDIT_ACCESS_MESSAGE:
       return {
         ...state,
         transactionLock: true,
@@ -165,7 +196,13 @@ export default function messageReducer(state = initialState, action: AnyAction):
     case FINISH_REMOVE_ACCESS_MESSAGE:
       return {
         ...state,
-        ...removeAccess(state, action.access, action.success),
+        ...removeAccess(state, action.id, action.success),
+        transactionLock: false,
+      };
+    case FINISH_EDIT_ACCESS_MESSAGE:
+      return {
+        ...state,
+        ...editAccess(state, action.id, action.accessLevel, action.success),
         transactionLock: false,
       };
     default:

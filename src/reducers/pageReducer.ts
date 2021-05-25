@@ -8,6 +8,7 @@ import {
   FINISH_TRANSFER,
   FINISH_REMOVE_ACCESS,
   FINISH_ADD_ACCESS,
+  FINISH_EDIT_ACCESS,
 } from '../actions';
 
 interface pageData {
@@ -29,6 +30,7 @@ export default function pageReducer(state = initialState, action: AnyAction): pa
     case SWAP_ACCOUNT:
     case FINISH_REMOVE_ACCESS:
     case FINISH_ADD_ACCESS:
+    case FINISH_EDIT_ACCESS:
     case CLEAR_PARAMETERS:
       return {};
     default:

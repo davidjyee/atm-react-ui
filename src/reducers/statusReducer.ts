@@ -4,12 +4,14 @@ import {
   FINISH_DEPOSIT,
   START_WITHDRAW,
   FINISH_WITHDRAW,
+  SWAP_ACCOUNT,
 } from '../actions';
 
-import { User, Transaction } from '../types';
+import { User, Transaction, AccessLevel, AccessInfo } from '../types';
 
 interface Status extends User {
   cash: number;
+  accountAccess: AccessLevel;
   transactionLock: boolean;
 }
 
@@ -17,6 +19,7 @@ const initialState: Status = {
   name: 'Akihiro Sakamoto',
   id: 816,
   cash: 100,
+  accountAccess: 0,
   transactionLock: false,
 };
 
@@ -44,6 +47,18 @@ function transact(account: Status, action: AnyAction): Status {
   return newState;
 }
 
+function updateAccess(state: Status, accessMap: Array<AccessInfo>): AccessLevel {
+  const accessLevel = accessMap.find(
+    (info: AccessInfo) => info.userId === state.id
+  )?.accessLevel;
+
+  if (accessLevel) {
+    return accessLevel;
+  } else {
+    return 0;
+  }
+}
+
 export default function statusReducer(
   state: Status = initialState,
   action: AnyAction
@@ -58,6 +73,11 @@ export default function statusReducer(
     case FINISH_WITHDRAW:
     case FINISH_DEPOSIT:
       return transact(state, action);
+    case SWAP_ACCOUNT:
+      return {
+        ...state,
+        accountAccess: updateAccess(state, action.accessMap),
+      };
     default:
       return state;
   }

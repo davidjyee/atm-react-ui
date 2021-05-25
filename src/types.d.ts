@@ -7,11 +7,12 @@ export interface User {
 }
 
 export type AccessId = number;
+export type AccessLevel = number;
 export interface AccessInfo {
   id: AccessId;
   userId: UserId;
   accountId: AccountId;
-  accessLevel: number;
+  accessLevel: AccessLevel;
 }
 
 export type AccountId = number;

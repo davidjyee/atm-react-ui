@@ -2,7 +2,13 @@ import React, { ChangeEvent } from 'react';
 
 import { IStoreState, ThunkDispatch } from '../../store';
 import { useSelector, useDispatch } from 'react-redux';
-import { setParameter, addAccess, removeAccess } from '../../actions';
+import {
+  setParameter,
+  addAccess,
+  removeAccess,
+  clearParameters,
+  editAccess,
+} from '../../actions';
 
 import {
   ListItemText,
@@ -24,6 +30,11 @@ import {
   Select,
   FormControl,
   InputLabel,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
 } from '@material-ui/core';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
 import {
@@ -32,7 +43,7 @@ import {
   Edit as EditIcon,
 } from '@material-ui/icons';
 
-import { AccessInfo } from '../../types';
+import { AccessId, AccessInfo, AccessLevel } from '../../types';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -64,7 +75,10 @@ function AccessDetails(props: AccessInfo): JSX.Element {
         <IconButton
           disabled={!canEdit}
           edge="end"
-          onClick={() => dispatch(setParameter('edit-access-dialog-open', true))}
+          onClick={() => {
+            dispatch(setParameter('edit-access-dialog-id', props.id));
+            dispatch(setParameter('edit-access-dialog-open', true));
+          }}
         >
           <EditIcon />
         </IconButton>
@@ -133,7 +147,7 @@ function AddAccess(): JSX.Element {
   const accessLevelFieldId = 'access-actions-level-field';
   const accessLevelFieldValue = useSelector(
     (state: IStoreState) => state.pageData[accessLevelFieldId]
-  ) as number;
+  ) as AccessLevel;
 
   // Validate fields
   const accessIdFieldCheck = validateAccessId(accessMap, accessIdFieldValue);
@@ -160,12 +174,10 @@ function AddAccess(): JSX.Element {
           <Select
             labelId="select-access-level-label"
             id="select-access-level"
-            value={accessLevelFieldValue + 1 ? accessLevelFieldValue + 1 : ''}
+            value={accessLevelFieldValue ? accessLevelFieldValue : ''}
             displayEmpty
             onChange={(event: ChangeEvent<SelectProps>) =>
-              dispatch(
-                setParameter(accessLevelFieldId, (event.target.value as number) - 1)
-              )
+              dispatch(setParameter(accessLevelFieldId, event.target.value as number))
             }
           >
             <MenuItem value="" disabled>
@@ -184,7 +196,7 @@ function AddAccess(): JSX.Element {
           }
           variant="contained"
           color="primary"
-          disabled={accessIdFieldCheck.error || !(accessLevelFieldValue + 1)}
+          disabled={accessIdFieldCheck.error || !accessLevelFieldValue}
         >
           Add Access
         </Button>
@@ -195,11 +207,25 @@ function AddAccess(): JSX.Element {
 
 export default function ManagementPage(): JSX.Element {
   const classes = useStyles();
+  const dispatch = useDispatch();
 
   const account = useSelector((state: IStoreState) => state.account);
   const accessMap = useSelector((state: IStoreState) =>
     state.data.access.filter((access) => access.accountId === account.id)
   );
+
+  const editDialogOpen = useSelector(
+    (state: IStoreState) => state.pageData['edit-access-dialog-open']
+  ) as boolean;
+  const accessId = useSelector(
+    (state: IStoreState) => state.pageData['edit-access-dialog-id']
+  ) as AccessId;
+  const closeDialog = () => dispatch(clearParameters());
+
+  const editAccessLevelFieldId = 'access-edit-level-field';
+  const editAccessLevelFieldValue = useSelector(
+    (state: IStoreState) => state.pageData[editAccessLevelFieldId]
+  ) as AccessLevel;
 
   return (
     <div className={classes.root}>
@@ -232,6 +258,45 @@ export default function ManagementPage(): JSX.Element {
           </Card>
         </Grid>
       </Grid>
+      <Dialog open={editDialogOpen} onClose={closeDialog}>
+        <DialogTitle id="edit-access-dialog-title">Edit Access Level</DialogTitle>
+        <DialogContent>
+          <FormControl variant="filled">
+            <InputLabel shrink id="edit-access-level-label">
+              Access Level
+            </InputLabel>
+            <Select
+              labelId="edit-access-level-label"
+              id="edit-access-level"
+              value={editAccessLevelFieldValue ? editAccessLevelFieldValue : ''}
+              displayEmpty
+              onChange={(event: ChangeEvent<SelectProps>) =>
+                dispatch(
+                  setParameter(editAccessLevelFieldId, event.target.value as number)
+                )
+              }
+            >
+              <MenuItem value="" disabled>
+                Select new access level of the user
+              </MenuItem>
+              <MenuItem value={1}>Owner access</MenuItem>
+              <MenuItem value={2}>Management access</MenuItem>
+            </Select>
+          </FormControl>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={closeDialog} color="secondary">
+            Cancel
+          </Button>
+          <Button
+            onClick={() => dispatch(editAccess(accessId, editAccessLevelFieldValue))}
+            color="secondary"
+            disabled={!editAccessLevelFieldValue}
+          >
+            Save
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }

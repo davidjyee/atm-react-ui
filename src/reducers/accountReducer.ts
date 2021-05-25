@@ -9,6 +9,10 @@ import {
   SWAP_ACCOUNT,
   START_ADD_ACCESS,
   FINISH_ADD_ACCESS,
+  START_REMOVE_ACCESS,
+  START_EDIT_ACCESS,
+  FINISH_REMOVE_ACCESS,
+  FINISH_EDIT_ACCESS,
 } from '../actions';
 
 import { Account, Transaction } from '../types';
@@ -66,6 +70,8 @@ export default function accountReducer(
     case START_DEPOSIT:
     case START_TRANSFER:
     case START_ADD_ACCESS:
+    case START_REMOVE_ACCESS:
+    case START_EDIT_ACCESS:
       return {
         ...state,
         transactionLock: true,
@@ -80,6 +86,8 @@ export default function accountReducer(
         transactionLock: false,
       };
     case FINISH_ADD_ACCESS:
+    case FINISH_REMOVE_ACCESS:
+    case FINISH_EDIT_ACCESS:
       return {
         ...state,
         transactionLock: false,

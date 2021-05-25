@@ -8,9 +8,11 @@ import {
   FINISH_ADD_ACCESS_MESSAGE,
   FINISH_REMOVE_ACCESS_MESSAGE,
   START_REMOVE_ACCESS_MESSAGE,
+  START_EDIT_ACCESS_MESSAGE,
+  FINISH_EDIT_ACCESS_MESSAGE,
 } from './types';
 
-import { AccessId, AccessInfo, Transaction } from '../types';
+import { AccessId, AccessInfo, AccessLevel, Transaction } from '../types';
 
 const resourceName = 'atm-esx-react-example';
 const fetchHeaders = {
@@ -131,7 +133,7 @@ export function addAccessMessage(access: AccessInfo): ThunkResult<Promise<boolea
   };
 }
 
-export function removeAccessMessage(access: AccessId): ThunkResult<Promise<boolean>> {
+export function removeAccessMessage(id: AccessId): ThunkResult<Promise<boolean>> {
   return async (
     dispatch: ThunkDispatch,
     getState: () => IStoreState
@@ -158,7 +160,46 @@ export function removeAccessMessage(access: AccessId): ThunkResult<Promise<boole
 
     dispatch({
       type: FINISH_REMOVE_ACCESS_MESSAGE,
-      access,
+      id,
+      success: json.success,
+    });
+
+    return json.success;
+  };
+}
+
+export function editAccessMessage(
+  id: AccessId,
+  accessLevel: AccessLevel
+): ThunkResult<Promise<boolean>> {
+  return async (
+    dispatch: ThunkDispatch,
+    getState: () => IStoreState
+  ): Promise<boolean> => {
+    const state = getState();
+
+    // Check for transaction lock first
+    if (state.data.transactionLock) {
+      throw new Error('CANNOT EDIT ACCESS: DATA TRANSMISSION ONGOING');
+    }
+
+    dispatch({
+      type: START_EDIT_ACCESS_MESSAGE,
+    });
+
+    //commit the addition of the access
+    // const res: Response = await fetch(`https://${resourceName}/access/remove`, {
+    //   ...fetchHeaders,
+    //   body: JSON.stringify(access),
+    // });
+
+    // const json = await safeJSONParse(res);
+    const json = { success: true };
+
+    dispatch({
+      type: FINISH_EDIT_ACCESS_MESSAGE,
+      id,
+      accessLevel,
       success: json.success,
     });
 

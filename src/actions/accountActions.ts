@@ -11,13 +11,23 @@ import {
   FINISH_ADD_ACCESS,
   START_REMOVE_ACCESS,
   FINISH_REMOVE_ACCESS,
+  FINISH_EDIT_ACCESS,
+  START_EDIT_ACCESS,
 } from './types';
 import {
   commitTransaction,
   addAccessMessage,
   removeAccessMessage,
+  editAccessMessage,
 } from './messageActions';
-import { Transaction, UserId, AccountId, RoutingNumber, AccessId } from '../types';
+import {
+  Transaction,
+  UserId,
+  AccountId,
+  RoutingNumber,
+  AccessId,
+  AccessLevel,
+} from '../types';
 import { DateTime } from 'luxon';
 
 export function deposit(
@@ -152,6 +162,9 @@ export function swapAccount(to: AccountId): ThunkResult<Promise<void>> {
     // Find the account to swap to
     const account = state.data.accounts.find((account) => account.id === to);
 
+    // Find the accesses of the account to swap to
+    const accessMap = state.data.access.filter((info) => info.accountId === to);
+
     if (!account) {
       throw new Error('INVALID ACCOUNT');
     }
@@ -159,6 +172,7 @@ export function swapAccount(to: AccountId): ThunkResult<Promise<void>> {
     dispatch({
       type: SWAP_ACCOUNT,
       to: account,
+      accessMap,
     });
   };
 }
@@ -166,7 +180,7 @@ export function swapAccount(to: AccountId): ThunkResult<Promise<void>> {
 export function addAccess(
   userId: UserId,
   accountId: AccountId,
-  accessLevel: number
+  accessLevel: AccessLevel
 ): ThunkResult<Promise<void>> {
   return async (dispatch: ThunkDispatch, getState: () => IStoreState): Promise<void> => {
     const state = getState();
@@ -203,7 +217,7 @@ export function removeAccess(id: AccessId): ThunkResult<Promise<void>> {
 
     // Check for transaction lock first
     if (state.account.transactionLock) {
-      throw new Error('CANNOT ADD ACCESS: ACCOUNT LOCKED');
+      throw new Error('CANNOT REMOVE ACCESS: ACCOUNT LOCKED');
     }
 
     dispatch({
@@ -214,6 +228,32 @@ export function removeAccess(id: AccessId): ThunkResult<Promise<void>> {
 
     dispatch({
       type: FINISH_REMOVE_ACCESS,
+      id,
+      success,
+    });
+  };
+}
+
+export function editAccess(
+  id: AccessId,
+  accessLevel: AccessLevel
+): ThunkResult<Promise<void>> {
+  return async (dispatch: ThunkDispatch, getState: () => IStoreState): Promise<void> => {
+    const state = getState();
+
+    // Check for transaction lock first
+    if (state.account.transactionLock) {
+      throw new Error('CANNOT EDIT ACCESS: ACCOUNT LOCKED');
+    }
+
+    dispatch({
+      type: START_EDIT_ACCESS,
+    });
+
+    const success = await dispatch(editAccessMessage(id, accessLevel));
+
+    dispatch({
+      type: FINISH_EDIT_ACCESS,
       id,
       success,
     });
