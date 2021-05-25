@@ -57,10 +57,13 @@ function validAmount(amount: string, limit?: number, minimum?: number): AmountCh
 
   const parsedNumber: number = parseFloat(amount);
 
+  console.log(limit);
+
   const isPositive: boolean = parsedNumber > 0;
   const isBigEnough: boolean = twoDecRegex.test(amount);
-  const isSmallerThanLimit: boolean = !limit || parsedNumber <= limit;
-  const isBiggerThanLimit: boolean = !minimum || parsedNumber >= minimum;
+  const isSmallerThanLimit: boolean = (!limit && limit !== 0) || parsedNumber <= limit;
+  const isBiggerThanLimit: boolean =
+    (!minimum && minimum !== 0) || parsedNumber >= minimum;
 
   if (!isPositive) {
     return {

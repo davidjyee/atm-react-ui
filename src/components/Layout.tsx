@@ -3,8 +3,6 @@ import React, { ChangeEvent } from 'react';
 import { IStoreState, ThunkDispatch } from '../store';
 import { useSelector, useDispatch } from 'react-redux';
 
-import * as logo from '../../assets/fleeca-logo.png';
-
 import {
   Fade,
   Grid,
@@ -138,10 +136,18 @@ export default function Layout(props: LayoutProps): JSX.Element {
         <AppBar position="relative">
           <Toolbar variant="dense">
             {type === 'fleeca-teller' && (
-              <img className={classes.image} src={logo} alt="Fleeca Bank Teller" />
+              <img
+                className={classes.image}
+                src="fleeca-logo.png"
+                alt="Fleeca Bank Teller"
+              />
             )}
             {type === 'fleeca-atm' && (
-              <img className={classes.image} src={logo} alt="Fleeca Bank ATM" />
+              <img
+                className={classes.image}
+                src="fleeca-logo.png"
+                alt="Fleeca Bank ATM"
+              />
             )}
             {type === 'atm' && (
               <Typography variant="h5" className={classes.title} noWrap>

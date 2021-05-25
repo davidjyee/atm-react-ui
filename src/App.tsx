@@ -31,7 +31,7 @@ const cssTheme = createMuiTheme({
   palette: {
     type: 'dark',
     background: {
-      default: 'rgba(0, 0, 0, 1)',
+      default: 'rgba(0, 0, 0, 0)',
     },
   },
 });
