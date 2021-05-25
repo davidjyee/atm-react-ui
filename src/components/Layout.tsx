@@ -1,10 +1,11 @@
-import React, { MouseEvent, ChangeEvent } from 'react';
+import React, { ChangeEvent } from 'react';
 
 import { IStoreState, ThunkDispatch } from '../store';
 import { useSelector, useDispatch } from 'react-redux';
 
+import * as logo from '../../assets/fleeca-logo.png';
+
 import {
-  ClickAwayListener,
   Fade,
   Grid,
   AppBar,
@@ -104,6 +105,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   accountSelect: {
     flexGrow: 1,
+    marginLeft: theme.spacing(2),
   },
   grid: {
     height: '100%',
@@ -119,6 +121,9 @@ const useStyles = makeStyles((theme: Theme) => ({
   content: {
     flexGrow: 1,
   },
+  image: {
+    height: '50px',
+  },
 }));
 
 export default function Layout(props: LayoutProps): JSX.Element {
@@ -128,48 +133,36 @@ export default function Layout(props: LayoutProps): JSX.Element {
   const type = useSelector((state: IStoreState) => state.interface.type);
 
   return (
-    <ClickAwayListener
-      onClickAway={(event: MouseEvent<Document>) => {
-        if (event.button === 2) {
-          dispatch(showUI(false));
-        }
-      }}
-    >
-      <Fade in={show} timeout={400}>
-        <div className={classes.root}>
-          <AppBar position="relative">
-            <Toolbar variant="dense">
-              {type === 'fleeca-teller' && (
-                <Typography variant="h5" className={classes.title} noWrap>
-                  Fleeca Teller
-                </Typography>
-              )}
-              {type === 'fleeca-atm' && (
-                <Typography variant="h5" className={classes.title} noWrap>
-                  Fleeca ATM
-                </Typography>
-              )}
-              {type === 'atm' && (
-                <Typography variant="h5" className={classes.title} noWrap>
-                  Third-party ATM
-                </Typography>
-              )}
-              <SelectAccount className={classes.accountSelect} />
-              <Button onClick={() => dispatch(showUI(false))} color="inherit">
-                Exit
-              </Button>
-            </Toolbar>
-          </AppBar>
-          <Grid container spacing={1} className={classes.grid}>
-            <Grid item className={classes.navigation}>
-              <Navigation />
-            </Grid>
-            <Grid item className={classes.content}>
-              {props.children}
-            </Grid>
+    <Fade in={show} timeout={400}>
+      <div className={classes.root}>
+        <AppBar position="relative">
+          <Toolbar variant="dense">
+            {type === 'fleeca-teller' && (
+              <img className={classes.image} src={logo} alt="Fleeca Bank Teller" />
+            )}
+            {type === 'fleeca-atm' && (
+              <img className={classes.image} src={logo} alt="Fleeca Bank ATM" />
+            )}
+            {type === 'atm' && (
+              <Typography variant="h5" className={classes.title} noWrap>
+                Third-party ATM
+              </Typography>
+            )}
+            <SelectAccount className={classes.accountSelect} />
+            <Button onClick={() => dispatch(showUI(false))} color="inherit">
+              Exit
+            </Button>
+          </Toolbar>
+        </AppBar>
+        <Grid container spacing={1} className={classes.grid}>
+          <Grid item className={classes.navigation}>
+            <Navigation />
           </Grid>
-        </div>
-      </Fade>
-    </ClickAwayListener>
+          <Grid item className={classes.content}>
+            {props.children}
+          </Grid>
+        </Grid>
+      </div>
+    </Fade>
   );
 }

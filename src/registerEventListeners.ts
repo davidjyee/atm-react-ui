@@ -8,3 +8,9 @@ window.addEventListener('message', (event) => {
     dispatch(showUI(event.data.visibility, event.data.interfaceType));
   }
 });
+
+window.addEventListener('click', (event) => {
+  if (event.button === 2) {
+    dispatch(showUI(false));
+  }
+});

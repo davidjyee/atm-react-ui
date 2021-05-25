@@ -53,6 +53,14 @@ module.exports = (options) => ({
           },
         ],
       },
+      {
+        test: /\.(png|jpe?g|gif)$/i,
+        use: [
+          {
+            loader: 'file-loader',
+          },
+        ],
+      } 
     ]
   },
   plugins: HAS_ASSETS ? options.plugins.concat(
