@@ -5,6 +5,24 @@ This is an example React UI for an ATM. It's been built using the ESX NUI React 
 It's configured to be used in a FiveM NUI resource, and the resource can be found here:
 https://github.com/davidjyee/atm-react-nui-example
 
+## Features
+- Supports three different modes: fleeca-teller, fleeca-atm, atm
+    - Each mode has different permissions attached: fleeca-teller can do everything, fleeca-atm can do everything but manage account holders, atm can only withdraw
+- Four main pages: actions, details, management, and transactions page
+    - Supported actions are withdrawals, deposits, and transfers
+    - Displays account name, type, number, routing, and balance on the details page
+    - The management page allows a user to view, add, edit, and remove the other account holders
+    - All transactions related to the current account are shown on the transactions page
+- Layout has an account change select along the top for quick access to other accounts
+- Layout also displays the current user's details for user verification
+- Transaction locks prevent multiple transactions from occurring at once
+- All transactions update server-side immediately to prevent desyncs
+- Right clicking allows for the user to quickly close the UI
+- Number verification for inputted amounts: 
+    - Must be a positive number, with a maximum of two decimal places
+    - Must have the amount in the origin account
+    - Must be at least the minimum amount ($1000 for transfers, $0 for deposits/withdrawals)
+
 ## First Install
 As with any other Node environment, you must first run one of the following commands:
 ```
