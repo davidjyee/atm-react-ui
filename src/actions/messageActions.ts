@@ -14,7 +14,7 @@ import {
 
 import { AccessId, AccessInfo, AccessLevel, Transaction } from '../types';
 
-const resourceName = 'atm-esx-react-example';
+const resourceName = 'atm-react-example';
 const fetchHeaders = {
   method: 'POST',
   headers: {
