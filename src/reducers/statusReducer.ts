@@ -69,9 +69,9 @@ function loadData(
   const newState = { ...state, ...user };
 
   // Find the access level of the first account
-  const accountId = accounts[0].id;
+  const accountId = accounts?.[0].id;
 
-  const accessInfo = access.find(
+  const accessInfo = access?.find(
     (info) => info.accountId === accountId && info.userId === user.id
   );
   const accessLevel: AccessLevel = accessInfo?.['accessLevel'] as AccessLevel;

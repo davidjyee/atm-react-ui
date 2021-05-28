@@ -65,7 +65,7 @@ function transact(account: AccountState, action: AnyAction): AccountState {
 function loadData(state: AccountState, accounts: Array<Record<string, unknown>>) {
   const newState = { ...state };
 
-  const account = accounts[0];
+  const account = accounts?.[0];
 
   // Load account
   if (account) {
