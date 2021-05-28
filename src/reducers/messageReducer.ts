@@ -11,7 +11,7 @@ import {
   START_REMOVE_ACCESS_MESSAGE,
   START_EDIT_ACCESS_MESSAGE,
 } from '../actions';
-import { AccessId, AccessInfo, Account, Transaction } from '../types';
+import { AccessId, AccessInfo, Account, Transaction, AccessLevel } from '../types';
 import { DateTime } from 'luxon';
 
 interface data {
@@ -23,66 +23,66 @@ interface data {
 
 const initialState: data = {
   access: [
-    {
-      id: 0,
-      userId: 816,
-      accountId: 1234567890,
-      accessLevel: 1,
-    },
-    {
-      id: 1,
-      userId: 816,
-      accountId: 9876543210,
-      accessLevel: 1,
-    },
+    // {
+    //   id: 0,
+    //   userId: 816,
+    //   accountId: 1234567890,
+    //   accessLevel: 1,
+    // },
+    // {
+    //   id: 1,
+    //   userId: 816,
+    //   accountId: 9876543210,
+    //   accessLevel: 1,
+    // },
   ],
   accounts: [
-    {
-      name: 'Personal',
-      type: 'Personal',
-      routing: 100,
-      id: 1234567890,
-      balance: 100,
-    },
-    {
-      name: 'Pillbox',
-      type: 'Business',
-      routing: 200,
-      id: 9876543210,
-      balance: 1000,
-    },
+    // {
+    //   name: 'Personal',
+    //   type: 'Personal',
+    //   routing: 100,
+    //   id: 1234567890,
+    //   balance: 100,
+    // },
+    // {
+    //   name: 'Pillbox',
+    //   type: 'Business',
+    //   routing: 200,
+    //   id: 9876543210,
+    //   balance: 1000,
+    // },
   ],
   transactions: [
-    {
-      id: 0,
-      type: 'DEPOSIT',
-      origin: null,
-      destination: 100,
-      initiator: 816,
-      time: DateTime.now(),
-      amount: 100,
-      note: 'Cash Deposit',
-    },
-    {
-      id: 1,
-      type: 'WITHDRAWAL',
-      origin: 100,
-      destination: null,
-      initiator: 816,
-      time: DateTime.now(),
-      amount: -100,
-      note: 'Cash Withdrawal',
-    },
-    {
-      id: 2,
-      type: 'TRANSFER',
-      origin: 100,
-      destination: 200,
-      initiator: 816,
-      time: DateTime.now(),
-      amount: 100,
-      note: 'Test transfer',
-    },
+    // {
+    //   id: 0,
+    //   type: 'DEPOSIT',
+    //   origin: null,
+    //   destination: 100,
+    //   initiator: 816,
+    //   time: DateTime.now(),
+    //   amount: 100,
+    //   note: 'Cash Deposit',
+    // },
+    // {
+    //   id: 1,
+    //   type: 'WITHDRAWAL',
+    //   origin: 100,
+    //   destination: null,
+    //   initiator: 816,
+    //   time: DateTime.now(),
+    //   amount: -100,
+    //   note: 'Cash Withdrawal',
+    // },
+    // {
+    //   id: 2,
+    //   type: 'TRANSFER',
+    //   origin: 100,
+    //   destination: 200,
+    //   initiator: 816,
+    //   time: DateTime.now(),
+    //   amount: 100,
+    //   note: 'Test transfer',
+    // },
   ],
   transactionLock: false,
 };
@@ -169,6 +169,35 @@ function editAccess(
   }
 }
 
+function loadData(
+  accounts: Array<Record<string, unknown>>,
+  access: Array<Record<string, unknown>>,
+  transactions: Array<Record<string, unknown>>
+) {
+  const newState: Record<string, unknown> = {};
+
+  if (accounts) {
+    newState['accounts'] = accounts;
+  }
+
+  if (access) {
+    newState['access'] = access;
+  }
+
+  if (transactions) {
+    transactions.map((transaction) => {
+      return {
+        ...transaction,
+        time: DateTime.fromISO(transaction.time as string),
+      };
+    });
+
+    newState['transactions'] = transactions;
+  }
+
+  return newState;
+}
+
 export default function messageReducer(state = initialState, action: AnyAction): data {
   switch (action.type) {
     case START_SHOW_UI:
@@ -181,6 +210,11 @@ export default function messageReducer(state = initialState, action: AnyAction):
         transactionLock: true,
       };
     case FINISH_SHOW_UI:
+      return {
+        ...state,
+        ...loadData(action.accounts, action.access, action.transactions),
+        transactionLock: false,
+      };
     case FINISH_TRANSACTION_MESSAGE:
       return {
         ...state,

@@ -5,6 +5,7 @@ import {
   START_WITHDRAW,
   FINISH_WITHDRAW,
   SWAP_ACCOUNT,
+  FINISH_SHOW_UI,
 } from '../actions';
 
 import { User, Transaction, AccessLevel, AccessInfo } from '../types';
@@ -16,9 +17,9 @@ interface Status extends User {
 }
 
 const initialState: Status = {
-  name: 'Akihiro Sakamoto',
-  id: 816,
-  cash: 100,
+  name: '',
+  id: -1,
+  cash: 0,
   accountAccess: 0,
   transactionLock: false,
 };
@@ -59,6 +60,29 @@ function updateAccess(state: Status, accessMap: Array<AccessInfo>): AccessLevel 
   }
 }
 
+function loadData(
+  state: Status,
+  user: Record<string, unknown>,
+  access: Array<Record<string, unknown>>,
+  accounts: Array<Record<string, unknown>>
+) {
+  const newState = { ...state, ...user };
+
+  // Find the access level of the first account
+  const accountId = accounts[0].id;
+
+  const accessInfo = access.find(
+    (info) => info.accountId === accountId && info.userId === user.id
+  );
+  const accessLevel: AccessLevel = accessInfo?.['accessLevel'] as AccessLevel;
+
+  if (accessLevel) {
+    newState.accountAccess = accessLevel;
+  }
+
+  return newState;
+}
+
 export default function statusReducer(
   state: Status = initialState,
   action: AnyAction
@@ -77,6 +101,11 @@ export default function statusReducer(
       return {
         ...state,
         accountAccess: updateAccess(state, action.accessMap),
+      };
+    case FINISH_SHOW_UI:
+      return {
+        ...loadData(state, action.user, action.access, action.accounts),
+        transactionLock: false,
       };
     default:
       return state;

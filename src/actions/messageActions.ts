@@ -43,21 +43,35 @@ export function showUI(visibility: boolean, type?: string): ThunkResult<Promise<
 
     dispatch({
       type: START_SHOW_UI,
+      show: visibility,
+      interfaceType: type,
     });
 
-    //Set the focus of the application
-    fetch(`https://${resourceName}/focus`, {
+    // Set the focus of the application
+    await fetch(`https://${resourceName}/focus`, {
       ...fetchHeaders,
       body: JSON.stringify({
         focus: visibility,
       }),
     });
 
-    dispatch({
-      type: FINISH_SHOW_UI,
-      show: visibility,
-      interfaceType: type,
-    });
+    if (visibility) {
+      // Retrieve information about the user
+      const res: Response = await fetch(`https://${resourceName}/retrieve`, {
+        ...fetchHeaders,
+      });
+
+      const json = await safeJSONParse(res);
+
+      dispatch({
+        type: FINISH_SHOW_UI,
+        ...json,
+      });
+    } else {
+      dispatch({
+        type: FINISH_SHOW_UI,
+      });
+    }
   };
 }
 
@@ -80,13 +94,12 @@ export function commitTransaction(
     });
 
     //commit the transaction
-    // const res: Response = await fetch(`https://${resourceName}/transaction/commit`, {
-    //   ...fetchHeaders,
-    //   body: JSON.stringify(transaction),
-    // });
+    const res: Response = await fetch(`https://${resourceName}/transaction/commit`, {
+      ...fetchHeaders,
+      body: JSON.stringify(transaction),
+    });
 
-    // const json = await safeJSONParse(res);
-    const json = { success: true };
+    const json = await safeJSONParse(res);
 
     dispatch({
       type: FINISH_TRANSACTION_MESSAGE,
@@ -115,13 +128,12 @@ export function addAccessMessage(access: AccessInfo): ThunkResult<Promise<boolea
     });
 
     //commit the addition of the access
-    // const res: Response = await fetch(`https://${resourceName}/access/add`, {
-    //   ...fetchHeaders,
-    //   body: JSON.stringify(access),
-    // });
+    const res: Response = await fetch(`https://${resourceName}/access/add`, {
+      ...fetchHeaders,
+      body: JSON.stringify(access),
+    });
 
-    // const json = await safeJSONParse(res);
-    const json = { success: true };
+    const json = await safeJSONParse(res);
 
     dispatch({
       type: FINISH_ADD_ACCESS_MESSAGE,
@@ -150,13 +162,14 @@ export function removeAccessMessage(id: AccessId): ThunkResult<Promise<boolean>>
     });
 
     //commit the addition of the access
-    // const res: Response = await fetch(`https://${resourceName}/access/remove`, {
-    //   ...fetchHeaders,
-    //   body: JSON.stringify(access),
-    // });
+    const res: Response = await fetch(`https://${resourceName}/access/remove`, {
+      ...fetchHeaders,
+      body: JSON.stringify({
+        id,
+      }),
+    });
 
-    // const json = await safeJSONParse(res);
-    const json = { success: true };
+    const json = await safeJSONParse(res);
 
     dispatch({
       type: FINISH_REMOVE_ACCESS_MESSAGE,
@@ -188,13 +201,15 @@ export function editAccessMessage(
     });
 
     //commit the addition of the access
-    // const res: Response = await fetch(`https://${resourceName}/access/remove`, {
-    //   ...fetchHeaders,
-    //   body: JSON.stringify(access),
-    // });
+    const res: Response = await fetch(`https://${resourceName}/access/edit`, {
+      ...fetchHeaders,
+      body: JSON.stringify({
+        id,
+        accessLevel,
+      }),
+    });
 
-    // const json = await safeJSONParse(res);
-    const json = { success: true };
+    const json = await safeJSONParse(res);
 
     dispatch({
       type: FINISH_EDIT_ACCESS_MESSAGE,

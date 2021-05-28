@@ -1,5 +1,5 @@
 import { AnyAction } from 'redux';
-import { FINISH_SHOW_UI } from '../actions';
+import { FINISH_SHOW_UI, START_SHOW_UI } from '../actions';
 
 interface interfaceData {
   show: boolean;
@@ -9,10 +9,10 @@ interface interfaceData {
 }
 
 const initialState: interfaceData = {
-  show: true,
-  type: 'fleeca-teller',
-  allowedTabs: ['actions', 'details', 'manage', 'transactions'],
-  allowedActions: ['deposit', 'withdraw', 'transfer'],
+  show: false,
+  type: '',
+  allowedTabs: [],
+  allowedActions: [],
 };
 
 function getRestrictions(type: string) {
@@ -41,12 +41,16 @@ export default function interfaceReducer(
   action: AnyAction
 ): interfaceData {
   switch (action.type) {
+    case START_SHOW_UI:
+      return {
+        ...state,
+        show: action.show,
+        ...getRestrictions(action.interfaceType ? action.interfaceType : state.type),
+        type: action.interfaceType ? action.interfaceType : state.type,
+      };
     case FINISH_SHOW_UI:
       return {
         ...state,
-        ...getRestrictions(action.interfaceType ? action.interfaceType : state.type),
-        show: action.show,
-        type: action.interfaceType ? action.interfaceType : state.type,
       };
     default:
       return state;
