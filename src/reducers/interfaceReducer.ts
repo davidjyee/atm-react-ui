@@ -6,6 +6,7 @@ interface interfaceData {
   type: string | null;
   allowedTabs: Array<string>;
   allowedActions: Array<string>;
+  fullLoading: boolean;
 }
 
 const initialState: interfaceData = {
@@ -13,6 +14,7 @@ const initialState: interfaceData = {
   type: '',
   allowedTabs: [],
   allowedActions: [],
+  fullLoading: true,
 };
 
 function getRestrictions(type: string) {
@@ -47,10 +49,12 @@ export default function interfaceReducer(
         show: action.show,
         ...getRestrictions(action.interfaceType ? action.interfaceType : state.type),
         type: action.interfaceType ? action.interfaceType : state.type,
+        fullLoading: true,
       };
     case FINISH_SHOW_UI:
       return {
         ...state,
+        fullLoading: false,
       };
     default:
       return state;

@@ -15,6 +15,7 @@ import {
   Select,
   MenuItem,
   SelectProps,
+  CircularProgress,
 } from '@material-ui/core';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import Navigation from './Navigation';
@@ -107,8 +108,8 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   grid: {
     height: '100%',
-    overflowY: 'auto',
     overflowX: 'hidden',
+    overflowY: 'auto',
     padding: theme.spacing(1),
     marginBottom: theme.spacing(1),
   },
@@ -129,6 +130,7 @@ export default function Layout(props: LayoutProps): JSX.Element {
   const dispatch: ThunkDispatch = useDispatch();
   const show = useSelector((state: IStoreState) => state.interface.show);
   const type = useSelector((state: IStoreState) => state.interface.type);
+  const loading = useSelector((state: IStoreState) => state.interface.fullLoading);
 
   return (
     <Fade in={show} timeout={400}>
@@ -160,14 +162,33 @@ export default function Layout(props: LayoutProps): JSX.Element {
             </Button>
           </Toolbar>
         </AppBar>
-        <Grid container spacing={1} className={classes.grid}>
-          <Grid item className={classes.navigation}>
-            <Navigation />
+        {loading && (
+          <Grid
+            container
+            spacing={1}
+            direction="column"
+            alignItems="center"
+            justify="center"
+            className={classes.grid}
+          >
+            <Grid item>
+              <Typography variant="h5">Loading...</Typography>
+            </Grid>
+            <Grid item>
+              <CircularProgress color="primary" />
+            </Grid>
           </Grid>
-          <Grid item className={classes.content}>
-            {props.children}
+        )}
+        {!loading && (
+          <Grid container spacing={1} className={classes.grid}>
+            <Grid item className={classes.navigation}>
+              <Navigation />
+            </Grid>
+            <Grid item className={classes.content}>
+              {props.children}
+            </Grid>
           </Grid>
-        </Grid>
+        )}
       </div>
     </Fade>
   );

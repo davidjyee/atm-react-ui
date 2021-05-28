@@ -37,7 +37,7 @@ export function showUI(visibility: boolean, type?: string): ThunkResult<Promise<
     const state = getState();
 
     // Check for transaction lock first
-    if (!visibility && state.data.transactionLock) {
+    if (!visibility && state.data.transactionLock && type !== 'force') {
       throw new Error('CANNOT EXIT ATM: DATA TRANSMISSION ONGOING');
     }
 
