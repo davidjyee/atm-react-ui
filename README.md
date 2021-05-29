@@ -23,6 +23,7 @@ https://github.com/davidjyee/atm-react-nui-example
 - Displays account name, type, number, routing, and balance on the details page
 ### Management Page
 - The management page allows a user to view, add, edit, and remove the other account holders
+- Prevents the editing and removal of your own access
 ### Transactions Page
 - All transactions related to the current account are shown on the transactions page
 - Transaction locks prevent multiple transactions from occurring at once
