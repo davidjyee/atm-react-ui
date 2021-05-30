@@ -5,6 +5,9 @@ This is an example React UI for an ATM. It's been built using the ESX NUI React 
 It's configured to be used in a FiveM NUI resource, and the resource can be found here:
 https://github.com/davidjyee/atm-react-nui-example
 
+Video demo and code-walkthrough can be found here:
+https://youtu.be/a6GE3w3X2k8
+
 ## Features
 ### General Interface
 - Supports three different modes: fleeca-teller, fleeca-atm, atm
