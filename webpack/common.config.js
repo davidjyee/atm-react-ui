@@ -140,6 +140,3 @@ module.exports = (options) => {
 
   return configurations;
 }
-
-
-
