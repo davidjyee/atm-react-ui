@@ -16,5 +16,4 @@ module.exports = CommonWebpack({
       inject: "body"
     })
   ]
-
 })

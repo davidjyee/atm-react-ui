@@ -1,80 +1,138 @@
-// HAS_ASSETS needs to be set to true, if you wish to copy the assets folder
-const HAS_ASSETS = false
-const path = require('path')
-const CopyPlugin = require('copy-webpack-plugin');
-// FIXME: Remove this from a const as this serves as a template now
+const path = require('path');
+const fs = require('fs');
 
-// Common webpack used for both configurations
-module.exports = (options) => ({
+const CopyPlugin = require('copy-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+
+const ResourceConfig = require('./resource.config');
+const resourceMap = require('./resourceScan');
+
+ResourceTsxConfig = (options) => ResourceConfig({
   mode: options.mode,
-  entry: options.entry,
   target: 'web',
+  entry: [
+    'react-devtools', 
+    path.resolve(options.sourcePath, 'index.tsx')
+  ],
   output: {
-    path: options.output.path,
-    filename: options.output.filename
+    path: options.outputPath,
+    filename: options.outputName,
   },
-  module: {
-    rules: [
-      // TypeScript JSX Transpiling
-      {
-        test: /\.tsx?$/,
-        use: [
-          {
-            loader: "ts-loader",
-            options: {
-              transpileOnly: true,
-            },
-          },
-        ],
-        exclude: /node_modules/,
-      },
-      {
-        //
-        test: /\.(scss|css)$/,
-        use: ["style-loader", "css-loader", "sass-loader"],
-      },
-      {
-        // Preprocess 3rd party .css files located in node_modules if you have them
-        test: /\.(scss|css)$/,
-        include: /node_modules/,
-        use: ["style-loader", "css-loader", "sass-loader"],
-      },
-      // Allows for SVG Use
-      {
-        test: /\.svg$/,
-        use: [
-          {
-            loader: "svg-url-loader",
-            options: {
-              // Inline files smaller than 10 kB
-              limit: 10 * 1024,
-              noquotes: true,
-            },
-          },
-        ],
-      },
-      {
-        test: /\.(png|jpe?g|gif)$/i,
-        use: [
-          {
-            loader: 'file-loader',
-          },
-        ],
-      } 
-    ]
-  },
-  plugins: HAS_ASSETS ? options.plugins.concat(
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: path.resolve(options.sourcePath, 'index.html'),
+      inject: "body"
+    }),
     new CopyPlugin({
       patterns: [
         {
-          from: path.resolve(__dirname, 'assets'),
-          to: path.resolve(__dirname, 'dist', 'assets')
+          from: path.posix.join(
+            path.resolve(options.sourcePath, 'assets').replace(/\\/g, "/"),
+            "**"
+          ),
+          to: path.resolve(options.outputPath, "[name].[ext]"),
         }
       ]
     })
-  ) : options.plugins,
+  ],
   resolve: {
-    modules: ['src', 'node_modules'],
+    modules: ['node_modules', options.sourcePath],
     extensions: ['.js', '.jsx', '.ts', '.tsx', '.react.js']
   }
-})
+});
+
+ResourceTsConfig = (options) => ResourceConfig({
+  mode: options.mode,
+  target: 'node',
+  entry: path.resolve(options.sourcePath, 'index.tsx'),
+  output: {
+    path: options.outputPath,
+    filename: options.outputName,
+  },
+  resolve: {
+    modules: ['node_modules', options.sourcePath],
+    extensions: ['.js', '.jsx', '.ts', '.tsx', '.react.js']
+  }
+});
+
+copyFolderRecursiveSync = (source, target) => {
+  // Check if folder needs to be created or integrated
+  const targetFolder = path.join(target, path.basename(source));
+  if (!fs.existsSync(targetFolder) ) {
+    fs.mkdirSync(targetFolder);
+  }
+
+  // Copy
+  const files = fs.readdirSync(source);
+
+  files.forEach((file) => {
+    const curSource = path.join(source, file);
+    if (fs.statSync(curSource).isDirectory()) {
+      copyFolderRecursiveSync(curSource, targetFolder);
+    } else {
+      fs.copyFileSync(curSource, targetFolder);
+    }
+  });
+}
+
+console.log(resourceMap);
+
+console.log(`FOUND ${resourceMap.resources.length} RESOURCE(S)`);
+
+// Create a webpack configuration per resource
+const configurations = [];
+
+resourceMap.resources.forEach((resourceName) => {
+  const resource = resourceMap.resourceInfo[resourceName];
+
+  if (!resource.lastBuilt || resource.lastBuilt < resource.lastModified) {
+    console.log(`BUILDING RESOURCE ${resourceName}`);
+
+    // Copy everything over except the typescript directories
+    const items = fs.readdirSync(path.resolve(resourceMap.source, resource.relativePath));
+    items.forEach((item) => {
+      // Skip copying the typescript directories
+      if(resource.tsCompile.includes(item)) {
+        return;
+      }
+
+      // Create target folder if it doesn't exist
+      const targetFolder = path.resolve(resourceMap.output, resource.relativePath);
+      if (!fs.existsSync(targetFolder)) {
+        fs.mkdirSync(targetFolder, { recursive: true });
+      }
+
+      // Start copying
+      const itemPath = path.resolve(resourceMap.source, resource.relativePath, item);
+      const itemStats = fs.statSync(itemPath);
+      if (itemStats.isDirectory()) {
+        copyFolderRecursiveSync(itemPath, path.resolve(resourceMap.output, resource.relativePath));
+      } else {
+        fs.copyFileSync(itemPath, path.resolve(resourceMap.output, resource.relativePath, item));
+      }
+    });
+
+    // Add the webpack configurations
+    resource.tsCompile.forEach((bundle) => {
+      if (bundle === 'ui') {
+        configurations.push(ResourceTsxConfig({
+          mode: 'development',
+          sourcePath: path.resolve(resourceMap.source, resource.relativePath, 'ui'),
+          outputPath: path.resolve(resourceMap.output, resource.relativePath),
+          outputName: 'index.js',
+        }));
+      } else {
+        configurations.push(ResourceTsConfig({
+          mode: 'development',
+          sourcePath: path.resolve(resourceMap.source, resource.relativePath, bundle),
+          outputPath: path.resolve(resourceMap.output, resource.relativePath),
+          outputName: `${bundle}.js`,
+        }));
+      }
+    });
+  } else {
+    console.log(`IGNORING RESOURCE '${resourceName}'`);
+  }
+});
+
+module.exports = configurations;

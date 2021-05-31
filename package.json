@@ -25,6 +25,8 @@
     "build:dev": "npm run format && npm run lint && webpack --config ./webpack/dev.config.js --color --progress --no-stats-cached-modules",
     "build:prod--analyze": "npm run format && npm run lint && webpack --config ./webpack/prod.config.js --color --analyze --progress --no-stats-orphan-modules",
     "build:prod": "npm run format && npm run lint && webpack --config ./webpack/prod.config.js --color --progress --no-stats-orphan-modules",
+    "build:test": "webpack --config ./webpack/common.config.js --color --progress --no-stats-cached-modules",
+    "rebuild:test": "rm -rf ./resources && webpack --config ./webpack/common.config.js --color --progress --no-stats-cached-modules",
     "deploy": "bash ./deploy.sh",
     "format": "prettier --write src/**/*.ts{,x}",
     "lint": "eslint src/**/*.ts{,x}"
