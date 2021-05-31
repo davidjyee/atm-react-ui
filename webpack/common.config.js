@@ -61,7 +61,7 @@ ResourceTsConfig = (options) => ResourceConfig({
 
 copyFolderRecursiveSync = (source, target) => {
   // Check if folder needs to be created or integrated
-  const targetFolder = path.join(target, path.basename(source));
+  const targetFolder = path.resolve(target, path.basename(source));
   if (!fs.existsSync(targetFolder) ) {
     fs.mkdirSync(targetFolder);
   }
@@ -70,11 +70,11 @@ copyFolderRecursiveSync = (source, target) => {
   const files = fs.readdirSync(source);
 
   files.forEach((file) => {
-    const curSource = path.join(source, file);
+    const curSource = path.resolve(source, file);
     if (fs.statSync(curSource).isDirectory()) {
       copyFolderRecursiveSync(curSource, targetFolder);
     } else {
-      fs.copyFileSync(curSource, targetFolder);
+      fs.copyFileSync(curSource, path.resolve(targetFolder, file));
     }
   });
 }
