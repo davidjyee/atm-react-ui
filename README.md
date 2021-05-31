@@ -1,9 +1,10 @@
 # ATM React UI Example
-
 This is an example React UI for an ATM. It's been built using the ESX NUI React Template by @Taso.
 
 It's configured to be used in a FiveM NUI resource, and the resource can be found here:
-https://github.com/davidjyee/atm-react-nui-example
+<s>https://github.com/davidjyee/atm-react-nui-example</s> (Deprecated)
+
+The repo is configured to allow for multiple resources to be developed side by side, with lua and ts resources intermixed. Building no longer builds resources that are already built, use rebuild:prod or rebuild:dev to rebuild all resources (will take a long time for many large fiveM resources!)
 
 ## Features
 - Supports three different modes: fleeca-teller, fleeca-atm, atm
@@ -56,12 +57,13 @@ yarn build:prod
 npm run build:prod 
 ```
 
-After build, these scripts can be found in the build folder of the 
+After build, these scripts are bundled into the resources folder of the 
 project directory as shown:
 ```
-|-- build
+|-- resources
     |-- index.html
     |-- index.js
+    ...
 ```
 
 *These builds differ in a couple of ways, most specifically: process.env.NODE_ENV, 
