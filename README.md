@@ -6,23 +6,32 @@ It's configured to be used in a FiveM NUI resource, and the resource can be foun
 
 The repo is configured to allow for multiple resources to be developed side by side, with lua and ts resources intermixed. Building no longer builds resources that are already built, use rebuild:prod or rebuild:dev to rebuild all resources (will take a long time for many large fiveM resources!)
 
+Video demo and code-walkthrough can be found here:
+https://youtu.be/a6GE3w3X2k8
+
 ## Features
+### General Interface
 - Supports three different modes: fleeca-teller, fleeca-atm, atm
     - Each mode has different permissions attached: fleeca-teller can do everything, fleeca-atm can do everything but manage account holders, atm can only withdraw
 - Four main pages: actions, details, management, and transactions page
-    - Supported actions are withdrawals, deposits, and transfers
-    - Displays account name, type, number, routing, and balance on the details page
-    - The management page allows a user to view, add, edit, and remove the other account holders
-    - All transactions related to the current account are shown on the transactions page
 - Layout has an account change select along the top for quick access to other accounts
-- Layout also displays the current user's details for user verification
-- Transaction locks prevent multiple transactions from occurring at once
-- All transactions update server-side immediately to prevent desyncs
-- Right clicking allows for the user to quickly close the UI
+- Layout also displays the current user's details for quick user verification and cash amounts
+### Actions Page
+- Supported actions are withdrawals, deposits, and transfers
 - Number verification for inputted amounts: 
     - Must be a positive number, with a maximum of two decimal places
     - Must have the amount in the origin account
     - Must be at least the minimum amount ($1000 for transfers, $0 for deposits/withdrawals)
+- Only one action can be opened at a time, prevents multiple actions from being done at once
+### Details Page
+- Displays account name, type, number, routing, and balance on the details page
+### Management Page
+- The management page allows a user to view, add, edit, and remove the other account holders
+- Prevents the editing and removal of your own access
+### Transactions Page
+- All transactions related to the current account are shown on the transactions page
+- Transaction locks prevent multiple transactions from occurring at once
+- All transactions update server-side immediately to prevent desyncs
 
 ## First Install
 As with any other Node environment, you must first run one of the following commands:
