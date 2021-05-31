@@ -72,37 +72,41 @@ scanDir = (dirPath, resourceMap) => {
     } else {
       // Look up all the information about the scan
       const stats = fs.statSync(itemPath);
-      const lastModified = findLatestModified(itemPath, stats.mtime);
+      
+      // Must be a directory to qualify as a resource
+      if (stats.isDirectory()) {
+        const lastModified = findLatestModified(itemPath, stats.mtime);
 
-      // Get the relative path
-      const relItemPath = path.relative(resourceMap.source, itemPath);
+        // Get the relative path
+        const relItemPath = path.relative(resourceMap.source, itemPath);
 
-      // Check to see if it was built and if so when
-      const outputItemPath = path.resolve(resourceMap.output, relItemPath);
-      const exists = fs.existsSync(outputItemPath);
-      let lastBuilt = null;
+        // Check to see if it was built and if so when
+        const outputItemPath = path.resolve(resourceMap.output, relItemPath);
+        const exists = fs.existsSync(outputItemPath);
+        let lastBuilt = null;
 
-      if (exists) {
-        const outputStats = fs.statSync(outputItemPath);
-        lastBuilt = findLatestModified(outputItemPath, outputStats.mtime);
+        if (exists) {
+          const outputStats = fs.statSync(outputItemPath);
+          lastBuilt = findLatestModified(outputItemPath, outputStats.mtime);
+        }
+
+        // Compile all known information so far
+        const info = {
+          relativePath: relItemPath,
+          lastModified,
+          lastBuilt,
+        };
+
+        // Check to see if there's typescript scripts to compile and where
+        const tsRegExp = /^index\.(ts|tsx)$/;
+        const scriptDirs = isTypescriptResource(itemPath, tsRegExp);
+
+        // Add the script dirs that are known
+        info.tsCompile = scriptDirs;
+
+        resourceMap.resources.push(item);
+        resourceMap.resourceInfo[item] = info;
       }
-
-      // Compile all known information so far
-      const info = {
-        relativePath: relItemPath,
-        lastModified,
-        lastBuilt,
-      };
-
-      // Check to see if there's typescript scripts to compile and where
-      const tsRegExp = /^index\.(ts|tsx)$/;
-      const scriptDirs = isTypescriptResource(itemPath, tsRegExp);
-
-      // Add the script dirs that are known
-      info.tsCompile = scriptDirs;
-
-      resourceMap.resources.push(item);
-      resourceMap.resourceInfo[item] = info;
     }
   });
 }
