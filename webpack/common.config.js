@@ -10,10 +10,10 @@ const resourceMap = require('./resourceScan');
 ResourceTsxConfig = (options) => ResourceConfig({
   mode: options.mode,
   target: 'web',
-  entry: [
+  entry: options.mode === 'development' ? [
     'react-devtools', 
     path.resolve(options.sourcePath, 'index.tsx')
-  ],
+  ] : path.resolve(options.sourcePath, 'index.tsx'),
   output: {
     path: options.outputPath,
     filename: options.outputName,
@@ -21,7 +21,8 @@ ResourceTsxConfig = (options) => ResourceConfig({
   plugins: [
     new HtmlWebpackPlugin({
       template: path.resolve(options.sourcePath, 'index.html'),
-      inject: "body"
+      inject: "body",
+      minify: "auto",
     }),
     new CopyPlugin({
       patterns: [
@@ -49,6 +50,9 @@ ResourceTsConfig = (options) => ResourceConfig({
     path: options.outputPath,
     filename: options.outputName,
   },
+  optimization:  {
+    minimize: options.mode === 'production',
+  },
   resolve: {
     modules: ['node_modules', options.sourcePath],
     extensions: ['.js', '.jsx', '.ts', '.tsx', '.react.js']
@@ -75,64 +79,67 @@ copyFolderRecursiveSync = (source, target) => {
   });
 }
 
-console.log(resourceMap);
-
 console.log(`FOUND ${resourceMap.resources.length} RESOURCE(S)`);
 
-// Create a webpack configuration per resource
-const configurations = [];
+module.exports = (options) => {
+  // Create a webpack configuration per resource
+  const configurations = [];
 
-resourceMap.resources.forEach((resourceName) => {
-  const resource = resourceMap.resourceInfo[resourceName];
+  resourceMap.resources.forEach((resourceName) => {
+    const resource = resourceMap.resourceInfo[resourceName];
 
-  if (!resource.lastBuilt || resource.lastBuilt < resource.lastModified) {
-    console.log(`BUILDING RESOURCE ${resourceName}`);
+    if (!resource.lastBuilt || resource.lastBuilt < resource.lastModified) {
+      console.log(`BUILDING RESOURCE ${resourceName}`);
 
-    // Copy everything over except the typescript directories
-    const items = fs.readdirSync(path.resolve(resourceMap.source, resource.relativePath));
-    items.forEach((item) => {
-      // Skip copying the typescript directories
-      if(resource.tsCompile.includes(item)) {
-        return;
-      }
+      // Copy everything over except the typescript directories
+      const items = fs.readdirSync(path.resolve(resourceMap.source, resource.relativePath));
+      items.forEach((item) => {
+        // Skip copying the typescript directories
+        if(resource.tsCompile.includes(item)) {
+          return;
+        }
 
-      // Create target folder if it doesn't exist
-      const targetFolder = path.resolve(resourceMap.output, resource.relativePath);
-      if (!fs.existsSync(targetFolder)) {
-        fs.mkdirSync(targetFolder, { recursive: true });
-      }
+        // Create target folder if it doesn't exist
+        const targetFolder = path.resolve(resourceMap.output, resource.relativePath);
+        if (!fs.existsSync(targetFolder)) {
+          fs.mkdirSync(targetFolder, { recursive: true });
+        }
 
-      // Start copying
-      const itemPath = path.resolve(resourceMap.source, resource.relativePath, item);
-      const itemStats = fs.statSync(itemPath);
-      if (itemStats.isDirectory()) {
-        copyFolderRecursiveSync(itemPath, path.resolve(resourceMap.output, resource.relativePath));
-      } else {
-        fs.copyFileSync(itemPath, path.resolve(resourceMap.output, resource.relativePath, item));
-      }
-    });
+        // Start copying
+        const itemPath = path.resolve(resourceMap.source, resource.relativePath, item);
+        const itemStats = fs.statSync(itemPath);
+        if (itemStats.isDirectory()) {
+          copyFolderRecursiveSync(itemPath, path.resolve(resourceMap.output, resource.relativePath));
+        } else {
+          fs.copyFileSync(itemPath, path.resolve(resourceMap.output, resource.relativePath, item));
+        }
+      });
 
-    // Add the webpack configurations
-    resource.tsCompile.forEach((bundle) => {
-      if (bundle === 'ui') {
-        configurations.push(ResourceTsxConfig({
-          mode: 'development',
-          sourcePath: path.resolve(resourceMap.source, resource.relativePath, 'ui'),
-          outputPath: path.resolve(resourceMap.output, resource.relativePath),
-          outputName: 'index.js',
-        }));
-      } else {
-        configurations.push(ResourceTsConfig({
-          mode: 'development',
-          sourcePath: path.resolve(resourceMap.source, resource.relativePath, bundle),
-          outputPath: path.resolve(resourceMap.output, resource.relativePath),
-          outputName: `${bundle}.js`,
-        }));
-      }
-    });
-  } else {
-    console.log(`IGNORING RESOURCE '${resourceName}'`);
-  }
-});
+      // Add the webpack configurations
+      resource.tsCompile.forEach((bundle) => {
+        if (bundle === 'ui') {
+          configurations.push(ResourceTsxConfig({
+            mode: options.mode,
+            sourcePath: path.resolve(resourceMap.source, resource.relativePath, 'ui'),
+            outputPath: path.resolve(resourceMap.output, resource.relativePath),
+            outputName: 'index.js',
+          }));
+        } else {
+          configurations.push(ResourceTsConfig({
+            mode: options.mode,
+            sourcePath: path.resolve(resourceMap.source, resource.relativePath, bundle),
+            outputPath: path.resolve(resourceMap.output, resource.relativePath),
+            outputName: `${bundle}.js`,
+          }));
+        }
+      });
+    } else {
+      console.log(`IGNORING RESOURCE '${resourceName}'`);
+    }
+  });
 
-module.exports = configurations;
+  return configurations;
+}
+
+
+

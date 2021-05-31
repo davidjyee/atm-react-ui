@@ -21,12 +21,13 @@
     "typescript": "^4.0.3"
   },
   "scripts": {
-    "start": "npm run format && npm run lint && webpack serve --config ./webpack/dev.config.js --color --progress --no-stats-cached-modules",
-    "build:dev": "npm run format && npm run lint && webpack --config ./webpack/dev.config.js --color --progress --no-stats-cached-modules",
-    "build:prod--analyze": "npm run format && npm run lint && webpack --config ./webpack/prod.config.js --color --analyze --progress --no-stats-orphan-modules",
-    "build:prod": "npm run format && npm run lint && webpack --config ./webpack/prod.config.js --color --progress --no-stats-orphan-modules",
-    "build:test": "webpack --config ./webpack/common.config.js --color --progress --no-stats-cached-modules",
-    "rebuild:test": "rm -rf ./resources && webpack --config ./webpack/common.config.js --color --progress --no-stats-cached-modules",
+    "build:prod--analyze": "npm run lint && webpack --config ./webpack/prod.config.js --color --analyze --progress --no-stats-orphan-modules",
+    "build:prod": "npm run lint && webpack --config ./webpack/prod.config.js --color --progress --no-stats-orphan-modules",
+    "build:dev": "webpack --config ./webpack/dev.config.js --color --progress --no-stats-cached-modules",
+    "rebuild:dev": "npm run clear && npm run build:dev",
+    "rebuild:prod": "npm run clear && npm run build:prod",
+    "rebuild:prod--analyze": "npm run clear && npm run build:prod--analyze",
+    "clear": "rm -rf ./resources",
     "deploy": "bash ./deploy.sh",
     "format": "prettier --write src/**/*.ts{,x}",
     "lint": "eslint src/**/*.ts{,x}"
